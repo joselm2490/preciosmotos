@@ -1,39 +1,50 @@
 // static/js/ui_renderer.js
-async function iniciarApp() {
-    const contenedor = document.getElementById('contenedor-motos');
-    console.log("Iniciando renderizado de catálogo...");
 
-    try {
-        // 1. Cargar Tasa
-        console.log("Consultando /api/tasa...");
-        const resTasa = await fetch('/api/tasa');
-        const dataTasa = await resTasa.json();
-        console.log("Tasa recibida:", dataTasa);
+function renderizarCatalogo(datos, marca) {
+    const container = document.getElementById('catalogContainer');
+    if (!container) return;
 
-        // 2. Cargar Motos de Empire
-        console.log("Consultando /api/empire...");
-        const resEmpire = await fetch('/api/empire');
-        const empire = await resEmpire.json();
-        console.log("Datos Empire recibidos:", empire);
+    // Convert to array if single object
+    const listaMotos = Array.isArray(datos) ? datos : [datos];
 
-        // 3. Renderizar
-        if (empire && empire.nombre) {
-            contenedor.innerHTML = `
-                <div class="moto-card">
-                    <h2>${empire.nombre}</h2>
-                    <img src="${empire.imagen}" alt="${empire.nombre}" style="width: 200px;">
-                    <p>Precio USD: ${empire.precio}</p>
-                    <p>Precio Bs: ${(parseFloat(empire.precio) * dataTasa.tasa).toFixed(2)}</p>
-                </div>
+    container.innerHTML = `<h1>Catálogo ${marca}</h1>` +
+        `<div class="catalog-grid">` +
+        listaMotos.map(moto => {
+            const precioUsd = moto.precio || moto.precioUsd || 0;
+            const tasa = window.tasaVesUsd || 36.5;
+            const precioVes = moto.precioVes || (parseFloat(precioUsd) * tasa);
+            const imagen = moto.imagen || '';
+            const nombre = moto.nombre || '';
+
+            return `
+            <div class="product-card">
+                ${imagen ? `<img src="${imagen}" class="product-image" alt="${nombre}">` : `<div class="no-image">Sin imagen</div>`}
+                <h3>${nombre}</h3>
+                <p class="price-tag">$${precioUsd}</p>
+                <p class="price-ves">${Math.round(precioVes).toLocaleString()} Bs.</p>
+            </div>
             `;
-            console.log("Renderizado finalizado con éxito.");
-        } else {
-            console.warn("No se pudo renderizar: estructura de datos incorrecta");
-        }
+        }).join('') + `</div>`;
+}
 
+async function iniciarApp() {
+    console.log("Iniciando renderizado de catálogo...");
+    try {
+        // Asegurar que la tasa se cargue primero
+        if (typeof fetchTasaCambio === 'function') {
+            await fetchTasaCambio();
+        }
+        
+        // Cargar Empire por defecto
+        if (typeof renderEmpire === 'function') {
+            await renderEmpire();
+        }
     } catch (error) {
-        console.error("Error grave en ui_renderer.js:", error);
-        contenedor.innerHTML = `<p style="color:red">Error al cargar: ${error.message}</p>`;
+        console.error("Error grave en iniciarApp:", error);
+        const container = document.getElementById('catalogContainer');
+        if (container) {
+            container.innerHTML = `<p style="color:red">Error al cargar: ${error.message}</p>`;
+        }
     }
 }
 
