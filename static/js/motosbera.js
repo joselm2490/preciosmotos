@@ -1,7 +1,10 @@
-window.tasaVesUsd = 36.5;
-
-async function cargarCatalogo() {
+// Renombramos la función para que coincida con lo que el index.html espera
+async function renderBera() {
     const container = document.getElementById('catalogContainer');
+    // Indicador visual de carga
+    container.innerHTML = "<h3>Cargando catálogo Bera...</h3>";
+
+    // Usamos tu lógica original de fetch con corsproxy
     const url = "https://corsproxy.io/?url=" + encodeURIComponent("https://beravirtual.com/wp-json/wc/store/v1/products?per_page=100");
 
     try {
@@ -15,6 +18,7 @@ async function cargarCatalogo() {
             categorias[cat].push(moto);
         });
 
+        // Pintamos el resultado en el contenedor usando tu lógica
         container.innerHTML = Object.keys(categorias).map(cat => `
             <section class="category-section">
                 <h2 class="category-title">${cat}</h2>
@@ -33,7 +37,6 @@ async function cargarCatalogo() {
             </section>
         `).join('');
     } catch (e) {
-        container.innerHTML = "❌ Error al cargar los productos.";
+        container.innerHTML = "❌ Error al cargar los productos Bera.";
     }
 }
-cargarCatalogo();

@@ -17,6 +17,6 @@ export default async function handler(req, res) {
     res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate');
     res.status(200).json(motos);
   } catch (error) {
-    res.status(500).json({ error: "Error" });
+    res.status(500).json({ error: "Error al cargar Empire" });
   }
 }
