@@ -1,16 +1,13 @@
-// Renombramos la función para que coincida con lo que el index.html espera
 async function renderBera() {
     const container = document.getElementById('catalogContainer');
-    // Indicador visual de carga
     container.innerHTML = "<h3>Cargando catálogo Bera...</h3>";
 
-    // Usamos tu lógica original de fetch con corsproxy
-    const url = "https://corsproxy.io/?url=" + encodeURIComponent("https://beravirtual.com/wp-json/wc/store/v1/products?per_page=100");
-
     try {
-        const response = await fetch(url);
+        // APUNTAMOS A TU PROPIA API
+        const response = await fetch('/api/bera');
         const products = await response.json();
 
+        // El resto de tu lógica se mantiene igual
         const categorias = {};
         products.forEach(moto => {
             const cat = moto.categories[0]?.name || "Otros";
@@ -18,16 +15,13 @@ async function renderBera() {
             categorias[cat].push(moto);
         });
 
-        // Pintamos el resultado en el contenedor usando tu lógica
         container.innerHTML = Object.keys(categorias).map(cat => `
             <section class="category-section">
                 <h2 class="category-title">${cat}</h2>
                 <div class="catalog-grid">
                     ${categorias[cat].map(moto => `
                         <div class="product-card">
-                            ${moto.images.length > 0
-                ? `<img src="${moto.images[0].src}" class="product-image">`
-                : `<div class="no-image">Imagen no disponible</div>`}
+                            ${moto.images.length > 0 ? `<img src="${moto.images[0].src}" class="product-image">` : `<div class="no-image">Imagen no disponible</div>`}
                             <h3>${moto.name}</h3>
                             <p class="price-tag">$${moto.prices.price}</p>
                             <p class="price-ves">${Math.round(moto.prices.price * window.tasaVesUsd).toLocaleString()} Bs.</p>
