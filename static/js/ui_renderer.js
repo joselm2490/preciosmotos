@@ -49,3 +49,39 @@ async function iniciarApp() {
 }
 
 document.addEventListener('DOMContentLoaded', iniciarApp);
+
+async function actualizarBaseDeDatos() {
+    const btn = document.getElementById('btnActualizarDb');
+    if (!btn) return;
+    
+    const originalText = btn.innerText;
+    btn.disabled = true;
+    btn.innerText = "Sincronizando...";
+    btn.style.backgroundColor = "#7f8c8d";
+    
+    try {
+        const response = await fetch('/api/cron-update-motos');
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+            alert("✅ Sincronización exitosa: Base de datos actualizada.");
+            
+            // Recargar la vista actual
+            const header = document.querySelector('#catalogContainer h1');
+            if (header && header.innerText.includes("Bera")) {
+                await renderBera();
+            } else {
+                await renderEmpire();
+            }
+        } else {
+            alert("❌ Error al actualizar: " + (data.error || "Error desconocido"));
+        }
+    } catch (error) {
+        console.error("Error al disparar cron:", error);
+        alert("❌ Error de conexión al intentar sincronizar.");
+    } finally {
+        btn.disabled = false;
+        btn.innerText = originalText;
+        btn.style.backgroundColor = "#27ae60";
+    }
+}

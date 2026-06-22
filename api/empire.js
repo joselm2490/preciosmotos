@@ -1,70 +1,91 @@
-import axios from 'axios';
-import * as cheerio from 'cheerio';
+// api/empire.js
+const { getDbPool } = require('./_db.js');
 
-function parsePrice(priceText) {
-  if (!priceText) return 0;
-  
-  let cleanText = priceText;
-  if (cleanText.includes('-')) {
-      const parts = cleanText.split('-');
-      cleanText = parts[parts.length - 1];
-  }
-  
-  cleanText = cleanText.replace(/\./g, '');
-  cleanText = cleanText.replace(/,/g, '.');
-  
-  const match = cleanText.match(/\d+(\.\d+)?/);
-  return match ? parseFloat(match[0]) : 0;
-}
-
-export default async function handler(req, res) {
-  console.log("--- API Empire: Iniciando consulta ---");
+module.exports = async function handler(req, res) {
+  console.log("--- API Empire (DB): Consultando base de datos con especificaciones ---");
+  const pool = getDbPool();
+  let client;
   try {
-    const { data: html } = await axios.get('https://www.empirekeeway.com/productos/', {
-      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36' }
-    });
-
-    const $ = cheerio.load(html);
-    const products = [];
-    const excludedKeywords = ['espejo', 'retrovisor', 'portabanda', 'repuesto', 'accesorio', 'repuestos'];
-
-    $('ul.products li.product').each((i, el) => {
-      const $el = $(el);
+    client = await pool.connect();
+    
+    const result = await client.query(
+      `SELECT 
+        nombre, precio, imagen, imagenes, enlace,
+        motor, cilindrada, potencia, torque, enfriamiento, transmision, embrague,
+        suspension_delantera, suspension_trasera, frenos_delanteros, frenos_traseros, frenado,
+        caucho_delantero, caucho_trasero, capacidad_combustible, colores, sistema_arranque, encendido,
+        peso, capacidad_carga, garantia, velocidad_maxima, rendimiento_gasolina,
+        inclinacion_barras, capacidad_ascenso, bateria, fusibles, aforo_aceite_motor,
+        bujias, faro, luz_freno, luces_cruce, longitud_total, ancho_total, altura_total,
+        distancia_ejes, dimension_caja, unidad_final, diametro_carrera, relacion_compresion, sistema_combustible
+       FROM public.motos 
+       WHERE marca = 'Empire' AND active = true 
+       ORDER BY nombre ASC`
+    );
+    
+    // Mapeamos al formato compatible
+    const products = result.rows.map(row => ({
+      nombre: row.nombre,
+      precio: parseFloat(row.precio),
+      imagen: row.imagen || '',
+      imagenes: row.imagenes || [],
+      enlace: row.enlace || '',
       
-      const nombre = $el.find('.woocommerce-loop-product__title, h2, h3').first().text().trim();
-      if (!nombre) return;
+      // Especificaciones detalladas
+      motor: row.motor || null,
+      cilindrada: row.cilindrada || null,
+      potencia: row.potencia || null,
+      torque: row.torque || null,
+      enfriamiento: row.enfriamiento || null,
+      transmision: row.transmision || null,
+      embrague: row.embrague || null,
+      suspension_delantera: row.suspension_delantera || null,
+      suspension_trasera: row.suspension_trasera || null,
+      frenos_delanteros: row.frenos_delanteros || null,
+      frenos_traseros: row.frenos_traseros || null,
+      frenado: row.frenado || null,
+      caucho_delantero: row.caucho_delantero || null,
+      caucho_trasero: row.caucho_trasero || null,
+      capacidad_combustible: row.capacidad_combustible || null,
+      colores: row.colores || null,
+      sistema_arranque: row.sistema_arranque || null,
+      encendido: row.encendido || null,
+      peso: row.peso || null,
+      capacidad_carga: row.capacidad_carga || null,
+      garantia: row.garantia || null,
+      velocidad_maxima: row.velocidad_maxima || null,
+      rendimiento_gasolina: row.rendimiento_gasolina || null,
       
-      // Filtrar accesorios
-      const lowercaseNombre = nombre.toLowerCase();
-      const isAccessory = excludedKeywords.some(keyword => lowercaseNombre.includes(keyword));
-      if (isAccessory) return;
-
-      const enlace = $el.find('a').first().attr('href') || '';
+      // Nuevas especificaciones Bera (vienen vacías para Empire)
+      inclinacion_barras: row.inclinacion_barras || null,
+      capacidad_ascenso: row.capacidad_ascenso || null,
+      bateria: row.bateria || null,
+      fusibles: row.fusibles || null,
+      aforo_aceite_motor: row.aforo_aceite_motor || null,
       
-      const imgEl = $el.find('img').first();
-      let imagen = imgEl.attr('data-nectar-img-src') || imgEl.attr('data-src') || imgEl.attr('src') || '';
-      
-      if (imagen && imagen.startsWith('/')) {
-        imagen = `https://www.empirekeeway.com${imagen}`;
-      }
-
-      const priceText = $el.find('.price').text().trim();
-      const precio = parsePrice(priceText);
-
-      products.push({
-        nombre,
-        precio,
-        imagen,
-        enlace
-      });
-    });
-
-    console.log(`--- API Empire: Enviando ${products.length} productos ---`);
+      // Nuevas especificaciones Empire
+      bujias: row.bujias || null,
+      faro: row.faro || null,
+      luz_freno: row.luz_freno || null,
+      luces_cruce: row.luces_cruce || null,
+      longitud_total: row.longitud_total || null,
+      ancho_total: row.ancho_total || null,
+      altura_total: row.altura_total || null,
+      distancia_ejes: row.distancia_ejes || null,
+      dimension_caja: row.dimension_caja || null,
+      unidad_final: row.unidad_final || null,
+      diametro_carrera: row.diametro_carrera || null,
+      relacion_compresion: row.relacion_compresion || null,
+      sistema_combustible: row.sistema_combustible || null
+    }));
+    
+    console.log(`--- API Empire (DB): Enviando ${products.length} productos con detalles homogéneos ---`);
     res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate');
-    res.status(200).json(products);
-
+    return res.status(200).json(products);
   } catch (error) {
-    console.error("Error en API Empire:", error.message);
-    res.status(500).json({ error: error.message });
+    console.error("❌ Error en API Empire (DB):", error.message);
+    return res.status(500).json({ error: "Error al obtener Empire" });
+  } finally {
+    if (client) client.release();
   }
-}
+};
