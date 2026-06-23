@@ -663,7 +663,7 @@ async function fetchAvaMotos() {
     {
       nombre: 'AVA Jaguar',
       precio: 950.00,
-      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/jaguar/background_jaguar.png',
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/jaguar.png',
       categoria: 'Sincrónicas',
       enlace: 'https://avamotosvzla.com/motos/moto/jaguar',
       motor: '4 tiempos, monocilíndrico',
@@ -678,7 +678,7 @@ async function fetchAvaMotos() {
     {
       nombre: 'AVA León',
       precio: 1150.00,
-      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/le%C3%B3n/background_le%C3%B3n.png',
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/leon.png',
       categoria: 'Sincrónicas',
       enlace: 'https://avamotosvzla.com/motos/moto/le%C3%B3n',
       motor: '4 tiempos, monocilíndrico',
@@ -693,7 +693,7 @@ async function fetchAvaMotos() {
     {
       nombre: 'AVA Mule',
       precio: 1250.00,
-      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/mule/background_mule.png',
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/mule.png',
       categoria: 'Sincrónicas',
       enlace: 'https://avamotosvzla.com/motos/moto/mule',
       motor: '4 tiempos, monocilíndrico',
@@ -708,7 +708,7 @@ async function fetchAvaMotos() {
     {
       nombre: 'AVA Pantera',
       precio: 1150.00,
-      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/pantera/background_pantera.png',
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/pantera.png',
       categoria: 'Sincrónicas',
       enlace: 'https://avamotosvzla.com/motos/moto/pantera',
       motor: '4 tiempos, monocilíndrico',
@@ -723,7 +723,7 @@ async function fetchAvaMotos() {
     {
       nombre: 'AVA Pantera Speed',
       precio: 1250.00,
-      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/pantera_speed/pantera_speed_1.png',
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/pantera_speed.png',
       categoria: 'Sincrónicas',
       enlace: 'https://avamotosvzla.com/motos/moto/pantera_speed',
       motor: '4 tiempos, monocilíndrico',
@@ -738,7 +738,7 @@ async function fetchAvaMotos() {
     {
       nombre: 'AVA Leopard',
       precio: 1100.00,
-      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/leopard/background_leopard.png',
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/leopard.png',
       categoria: 'Sincrónicas',
       enlace: 'https://avamotosvzla.com/motos/moto/leopard',
       motor: '4 tiempos, monocilíndrico',
@@ -753,7 +753,7 @@ async function fetchAvaMotos() {
     {
       nombre: 'AVA Wolf',
       precio: 950.00,
-      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/wolf/wolf_1.png',
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/wolf.png',
       categoria: 'Sincrónicas',
       enlace: 'https://avamotosvzla.com/motos/moto/wolf',
       motor: '4 tiempos, monocilíndrico',
@@ -768,7 +768,7 @@ async function fetchAvaMotos() {
     {
       nombre: 'AVA Chita',
       precio: 1650.00,
-      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/chita/chita_1.png',
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/chita.png',
       categoria: 'Sincrónicas',
       enlace: 'https://avamotosvzla.com/motos/moto/chita',
       motor: '4 tiempos, monocilíndrico',
@@ -782,7 +782,7 @@ async function fetchAvaMotos() {
     {
       nombre: 'AVA Puma',
       precio: 1350.00,
-      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/puma/puma_1.png',
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/puma.png',
       categoria: 'Sincrónicas',
       enlace: 'https://avamotosvzla.com/motos/moto/puma',
       motor: '4 tiempos, monocilíndrico',
@@ -796,7 +796,7 @@ async function fetchAvaMotos() {
     {
       nombre: 'AVA Avispón',
       precio: 1390.00,
-      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/avispon/background_avispon.png',
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/avispon.png',
       categoria: 'Automáticas',
       enlace: 'https://avamotosvzla.com/motos/moto/avispon',
       motor: '4 tiempos, monocilíndrico',
@@ -811,7 +811,7 @@ async function fetchAvaMotos() {
     {
       nombre: 'AVA Tucán',
       precio: 890.00,
-      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/tucan/background_tucan.png',
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/tucan.png',
       categoria: 'Automáticas',
       enlace: 'https://avamotosvzla.com/motos/moto/tucan',
       motor: '4 tiempos, monocilíndrico',
@@ -826,7 +826,7 @@ async function fetchAvaMotos() {
     {
       nombre: 'AVA Flash',
       precio: 1290.00,
-      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/flash/background_flash.png',
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/flash.png',
       categoria: 'Automáticas',
       enlace: 'https://avamotosvzla.com/motos/moto/flash',
       motor: '4 tiempos, monocilíndrico',
@@ -843,7 +843,7 @@ async function fetchAvaMotos() {
     {
       nombre: 'AVA Tigre',
       precio: 1850.00,
-      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/tigre/tigre_1.png',
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/tigre.png',
       categoria: 'Sincrónicas',
       enlace: 'https://avamotosvzla.com/motos/moto/tigre',
       motor: '4 tiempos, monocilíndrico',
@@ -858,7 +858,7 @@ async function fetchAvaMotos() {
     {
       nombre: 'AVA Mustang',
       precio: 1990.00,
-      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/mustang/mustang_1.png',
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/mustang.png',
       categoria: 'Sincrónicas',
       enlace: 'https://avamotosvzla.com/motos/moto/mustang',
       motor: '4 tiempos, monocilíndrico',
@@ -873,7 +873,7 @@ async function fetchAvaMotos() {
     {
       nombre: 'AVA Mustang Adventure',
       precio: 2490.00,
-      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/mustang-adventure/mustang-adventure_1.png',
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/mustang-adventure.png',
       categoria: 'Sincrónicas',
       enlace: 'https://avamotosvzla.com/motos/moto/mustang-adventure',
       motor: '4 tiempos, monocilíndrico',
@@ -885,7 +885,7 @@ async function fetchAvaMotos() {
     {
       nombre: 'AVA Deer',
       precio: 1790.00,
-      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/deer/background_deer.png',
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/deer.png',
       categoria: 'Sincrónicas',
       enlace: 'https://avamotosvzla.com/motos/moto/deer',
       motor: '4 tiempos, monocilíndrico',
@@ -900,7 +900,7 @@ async function fetchAvaMotos() {
     {
       nombre: 'AVA Tigrito',
       precio: 1550.00,
-      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/tigrito/tigrito_1.png',
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/tigrito.png',
       categoria: 'Sincrónicas',
       enlace: 'https://avamotosvzla.com/motos/moto/tigrito',
       motor: '4 tiempos, monocilíndrico',
@@ -915,7 +915,7 @@ async function fetchAvaMotos() {
     {
       nombre: 'AVA Tigrito Speed',
       precio: 1650.00,
-      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/tigritospeed/tigritospeed_1.png',
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/tigritospeed.png',
       categoria: 'Sincrónicas',
       enlace: 'https://avamotosvzla.com/motos/moto/tigritospeed',
       motor: '4 tiempos, monocilíndrico',
@@ -929,7 +929,7 @@ async function fetchAvaMotos() {
     {
       nombre: 'AVA Deer 2',
       precio: 1850.00,
-      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/deer2/deer2_1.png',
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/deer2.png',
       categoria: 'Sincrónicas',
       enlace: 'https://avamotosvzla.com/motos/moto/deer2',
       motor: '4 tiempos, monocilíndrico',
@@ -944,7 +944,7 @@ async function fetchAvaMotos() {
     {
       nombre: 'AVA Búfalo',
       precio: 2190.00,
-      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/bufalo/bufalo_1.png',
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/bufalo.png',
       categoria: 'Sincrónicas',
       enlace: 'https://avamotosvzla.com/motos/moto/bufalo',
       motor: '4 tiempos, monocilíndrico',
@@ -959,7 +959,7 @@ async function fetchAvaMotos() {
     {
       nombre: 'AVA Rhino',
       precio: 2590.00,
-      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/rhino/rhino_1.png',
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/rhino.png',
       categoria: 'Sincrónicas',
       enlace: 'https://avamotosvzla.com/motos/moto/rhino',
       motor: '4 tiempos, monocilíndrico',
