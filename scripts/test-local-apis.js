@@ -4,6 +4,7 @@ const beraHandler = require('../api/bera.js');
 const empireHandler = require('../api/empire.js');
 const tvsHandler = require('../api/tvs.js');
 const toroHandler = require('../api/toro.js');
+const avaHandler = require('../api/ava.js');
 
 async function runTest() {
   console.log("--- INICIANDO PRUEBAS DE APIS LOCALES CON SUPABASE ---");
@@ -97,6 +98,26 @@ async function runTest() {
     }
   } catch (err) {
     console.error("❌ Excepción en api/toro.js:", err.message);
+  }
+
+  // Limpiar mockRes
+  mockRes.headers = {};
+  mockRes.statusCode = 200;
+  mockRes.data = null;
+  
+  console.log("\n--- Probando api/ava.js ---");
+  try {
+    await avaHandler({}, mockRes);
+    if (mockRes.statusCode === 200) {
+      console.log(`✅ Exito: api/ava.js retornó ${mockRes.data.length} motos.`);
+      if (mockRes.data.length > 0) {
+        console.log("Ejemplo de producto Ava (primer registro):", JSON.stringify(mockRes.data[0], null, 2));
+      }
+    } else {
+      console.error(`❌ Error en api/ava.js. Status Code: ${mockRes.statusCode}`, mockRes.data);
+    }
+  } catch (err) {
+    console.error("❌ Excepción en api/ava.js:", err.message);
   }
   
   console.log("\n--- PRUEBAS COMPLETADAS ---");

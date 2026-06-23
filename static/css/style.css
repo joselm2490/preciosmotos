@@ -294,6 +294,12 @@ body {
     border: 1px solid #374151;
 }
 
+.brand-badge.ava {
+    background-color: #374151;
+    color: #ff781e;
+    border: 1px solid #4b5563;
+}
+
 /* Product Image */
 .product-image-container {
     width: 100%;

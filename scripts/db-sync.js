@@ -657,6 +657,375 @@ async function fetchToroMotos() {
   return results;
 }
 
+async function fetchAvaMotos() {
+  console.log("--- Loading AVA Motocicletas static products ---");
+  const rawList = [
+    {
+      nombre: 'AVA Jaguar',
+      precio: 950.00,
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/jaguar/background_jaguar.png',
+      categoria: 'Sincrónicas',
+      enlace: 'https://avamotosvzla.com/motos/moto/jaguar',
+      motor: '4 tiempos, monocilíndrico',
+      cilindrada: '150 cc',
+      potencia: '7.8 kW a 8500 rpm',
+      torque: '8.3 Nm a 7500 rpm',
+      capacidad_combustible: '11 l',
+      rendimiento_gasolina: '2.2 l / 100km',
+      frenos_delanteros: 'Disco',
+      frenos_traseros: 'Tambor'
+    },
+    {
+      nombre: 'AVA León',
+      precio: 1150.00,
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/le%C3%B3n/background_le%C3%B3n.png',
+      categoria: 'Sincrónicas',
+      enlace: 'https://avamotosvzla.com/motos/moto/le%C3%B3n',
+      motor: '4 tiempos, monocilíndrico',
+      cilindrada: '150 cc',
+      potencia: '7.8 kW a 8500 rpm',
+      torque: '8.3 Nm a 7500 rpm',
+      capacidad_combustible: '13 l',
+      rendimiento_gasolina: '2.4 l / 100km',
+      frenos_delanteros: 'Disco',
+      frenos_traseros: 'Tambor'
+    },
+    {
+      nombre: 'AVA Mule',
+      precio: 1250.00,
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/mule/background_mule.png',
+      categoria: 'Sincrónicas',
+      enlace: 'https://avamotosvzla.com/motos/moto/mule',
+      motor: '4 tiempos, monocilíndrico',
+      cilindrada: '150 cc',
+      potencia: '9.0 kW a 8500 rpm',
+      torque: '9.6 Nm a 7500 rpm',
+      capacidad_combustible: '11 l',
+      rendimiento_gasolina: '2.1 l / 100km',
+      frenos_delanteros: 'Disco',
+      frenos_traseros: 'Tambor'
+    },
+    {
+      nombre: 'AVA Pantera',
+      precio: 1150.00,
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/pantera/background_pantera.png',
+      categoria: 'Sincrónicas',
+      enlace: 'https://avamotosvzla.com/motos/moto/pantera',
+      motor: '4 tiempos, monocilíndrico',
+      cilindrada: '150 cc',
+      potencia: '7.8 kW a 8500 rpm',
+      torque: '8.3 Nm a 7500 rpm',
+      capacidad_combustible: '13 l',
+      rendimiento_gasolina: '2.2 l / 100km',
+      frenos_delanteros: 'Disco',
+      frenos_traseros: 'Tambor'
+    },
+    {
+      nombre: 'AVA Pantera Speed',
+      precio: 1250.00,
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/pantera_speed/pantera_speed_1.png',
+      categoria: 'Sincrónicas',
+      enlace: 'https://avamotosvzla.com/motos/moto/pantera_speed',
+      motor: '4 tiempos, monocilíndrico',
+      cilindrada: '150 cc',
+      potencia: '7.8 kW a 8500 rpm',
+      torque: '8.3 Nm a 7500 rpm',
+      capacidad_combustible: '13 l',
+      rendimiento_gasolina: '2.2 l / 100km',
+      frenos_delanteros: 'Disco',
+      frenos_traseros: 'Tambor'
+    },
+    {
+      nombre: 'AVA Leopard',
+      precio: 1100.00,
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/leopard/background_leopard.png',
+      categoria: 'Sincrónicas',
+      enlace: 'https://avamotosvzla.com/motos/moto/leopard',
+      motor: '4 tiempos, monocilíndrico',
+      cilindrada: '150 cc',
+      potencia: '7.8 kW a 8500 rpm',
+      torque: '8.3 Nm a 7500 rpm',
+      capacidad_combustible: '11 l',
+      rendimiento_gasolina: '2.2 l / 100km',
+      frenos_delanteros: 'Disco',
+      frenos_traseros: 'Tambor'
+    },
+    {
+      nombre: 'AVA Wolf',
+      precio: 950.00,
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/wolf/wolf_1.png',
+      categoria: 'Sincrónicas',
+      enlace: 'https://avamotosvzla.com/motos/moto/wolf',
+      motor: '4 tiempos, monocilíndrico',
+      cilindrada: '110 cc',
+      potencia: '4.5 kW a 7500 rpm',
+      torque: '6.2 Nm a 5000 rpm',
+      capacidad_combustible: '7 l',
+      rendimiento_gasolina: '1.1 l / 100km',
+      frenos_delanteros: 'Tambor',
+      frenos_traseros: 'Tambor'
+    },
+    {
+      nombre: 'AVA Chita',
+      precio: 1650.00,
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/chita/chita_1.png',
+      categoria: 'Sincrónicas',
+      enlace: 'https://avamotosvzla.com/motos/moto/chita',
+      motor: '4 tiempos, monocilíndrico',
+      cilindrada: '150 cc',
+      potencia: '11.8 kW a 7500 rpm',
+      capacidad_combustible: '11 l',
+      frenos_delanteros: 'Disco',
+      frenos_traseros: 'Tambor',
+      distancia_ejes: '1220 mm'
+    },
+    {
+      nombre: 'AVA Puma',
+      precio: 1350.00,
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/puma/puma_1.png',
+      categoria: 'Sincrónicas',
+      enlace: 'https://avamotosvzla.com/motos/moto/puma',
+      motor: '4 tiempos, monocilíndrico',
+      cilindrada: '150 cc',
+      potencia: '7.8 kW a 7500 rpm',
+      torque: '9.5 Nm a 6000 rpm',
+      capacidad_combustible: '15.5 l',
+      transmision: 'De cadena',
+      sistema_arranque: 'Eléctrico / Pedal'
+    },
+    {
+      nombre: 'AVA Avispón',
+      precio: 1390.00,
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/avispon/background_avispon.png',
+      categoria: 'Automáticas',
+      enlace: 'https://avamotosvzla.com/motos/moto/avispon',
+      motor: '4 tiempos, monocilíndrico',
+      cilindrada: '150 cc',
+      potencia: '7.6 kW a 7500 rpm',
+      torque: '8.2 Nm a 6500 rpm',
+      capacidad_combustible: '6 l',
+      rendimiento_gasolina: '2.2 l / 100km',
+      frenos_delanteros: 'Disco',
+      frenos_traseros: 'Tambor'
+    },
+    {
+      nombre: 'AVA Tucán',
+      precio: 890.00,
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/tucan/background_tucan.png',
+      categoria: 'Automáticas',
+      enlace: 'https://avamotosvzla.com/motos/moto/tucan',
+      motor: '4 tiempos, monocilíndrico',
+      cilindrada: '110 cc',
+      potencia: '4.7 kW a 8000 rpm',
+      torque: '6.1 Nm a 6000 rpm',
+      capacidad_combustible: '5 l',
+      rendimiento_gasolina: '2.1 l / 100km',
+      frenos_delanteros: 'Disco',
+      frenos_traseros: 'Tambor'
+    },
+    {
+      nombre: 'AVA Flash',
+      precio: 1290.00,
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/flash/background_flash.png',
+      categoria: 'Automáticas',
+      enlace: 'https://avamotosvzla.com/motos/moto/flash',
+      motor: '4 tiempos, monocilíndrico',
+      cilindrada: '150 cc',
+      potencia: '7.0 kW a 7500 rpm',
+      torque: '8.0 Nm a 6000 rpm',
+      capacidad_combustible: '6 l',
+      transmision: 'De correa',
+      sistema_arranque: 'Eléctrico / Pedal',
+      velocidad_maxima: '80 km/h',
+      relacion_compresion: '9.2:1',
+      distancia_ejes: '1280 mm'
+    },
+    {
+      nombre: 'AVA Tigre',
+      precio: 1850.00,
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/tigre/tigre_1.png',
+      categoria: 'Sincrónicas',
+      enlace: 'https://avamotosvzla.com/motos/moto/tigre',
+      motor: '4 tiempos, monocilíndrico',
+      cilindrada: '200 cc',
+      potencia: '12 kW a 7000 rpm',
+      torque: '17 Nm a 6000 rpm',
+      capacidad_combustible: '12 l',
+      frenos_delanteros: 'Disco',
+      frenos_traseros: 'Tambor',
+      distancia_ejes: '1190 mm'
+    },
+    {
+      nombre: 'AVA Mustang',
+      precio: 1990.00,
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/mustang/mustang_1.png',
+      categoria: 'Sincrónicas',
+      enlace: 'https://avamotosvzla.com/motos/moto/mustang',
+      motor: '4 tiempos, monocilíndrico',
+      cilindrada: '200 cc',
+      potencia: '12 kW a 7000 rpm',
+      torque: '17 Nm a 6000 rpm',
+      capacidad_combustible: '12 l',
+      frenos_delanteros: 'Disco',
+      frenos_traseros: 'Tambor',
+      distancia_ejes: '1420 mm'
+    },
+    {
+      nombre: 'AVA Mustang Adventure',
+      precio: 2490.00,
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/mustang-adventure/mustang-adventure_1.png',
+      categoria: 'Sincrónicas',
+      enlace: 'https://avamotosvzla.com/motos/moto/mustang-adventure',
+      motor: '4 tiempos, monocilíndrico',
+      cilindrada: '250 cc',
+      transmision: '6 velocidades',
+      relacion_compresion: '8.8:1',
+      velocidad_maxima: '90 km/h'
+    },
+    {
+      nombre: 'AVA Deer',
+      precio: 1790.00,
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/deer/background_deer.png',
+      categoria: 'Sincrónicas',
+      enlace: 'https://avamotosvzla.com/motos/moto/deer',
+      motor: '4 tiempos, monocilíndrico',
+      cilindrada: '150 cc',
+      potencia: '10.5 kW a 7000 rpm',
+      torque: '15 Nm a 6000 rpm',
+      capacidad_combustible: '12 l',
+      frenos_delanteros: 'Disco',
+      frenos_traseros: 'Tambor',
+      distancia_ejes: '1190 mm'
+    },
+    {
+      nombre: 'AVA Tigrito',
+      precio: 1550.00,
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/tigrito/tigrito_1.png',
+      categoria: 'Sincrónicas',
+      enlace: 'https://avamotosvzla.com/motos/moto/tigrito',
+      motor: '4 tiempos, monocilíndrico',
+      cilindrada: '150 cc',
+      potencia: '11.8 kW a 7500 rpm',
+      torque: '18 Nm a 8000 rpm',
+      capacidad_combustible: '11 l',
+      sistema_arranque: 'Eléctrico / Pedal',
+      transmision: 'De cadena',
+      velocidad_maxima: '110 km/h'
+    },
+    {
+      nombre: 'AVA Tigrito Speed',
+      precio: 1650.00,
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/tigritospeed/tigritospeed_1.png',
+      categoria: 'Sincrónicas',
+      enlace: 'https://avamotosvzla.com/motos/moto/tigritospeed',
+      motor: '4 tiempos, monocilíndrico',
+      cilindrada: '150 cc',
+      potencia: '11.8 kW a 7500 rpm',
+      torque: '18 Nm a 8000 rpm',
+      capacidad_combustible: '11 l',
+      sistema_arranque: 'Eléctrico / Pedal',
+      transmision: 'De cadena'
+    },
+    {
+      nombre: 'AVA Deer 2',
+      precio: 1850.00,
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/deer2/deer2_1.png',
+      categoria: 'Sincrónicas',
+      enlace: 'https://avamotosvzla.com/motos/moto/deer2',
+      motor: '4 tiempos, monocilíndrico',
+      cilindrada: '150 cc',
+      potencia: '7.6 kW a 7500 rpm',
+      torque: '10.5 Nm a 7000 rpm',
+      capacidad_combustible: '12 l',
+      frenos_delanteros: 'Disco',
+      frenos_traseros: 'Tambor',
+      distancia_ejes: '1190 mm'
+    },
+    {
+      nombre: 'AVA Búfalo',
+      precio: 2190.00,
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/bufalo/bufalo_1.png',
+      categoria: 'Sincrónicas',
+      enlace: 'https://avamotosvzla.com/motos/moto/bufalo',
+      motor: '4 tiempos, monocilíndrico',
+      cilindrada: '200 cc',
+      potencia: '11.8 kW a 7500 rpm',
+      torque: '18 Nm a 8000 rpm',
+      capacidad_combustible: '6 l',
+      frenos_delanteros: 'Disco',
+      frenos_traseros: 'Disco',
+      transmision: 'Manual 4 Velocidades con Reversa (4-3-2-1-N-R)'
+    },
+    {
+      nombre: 'AVA Rhino',
+      precio: 2590.00,
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/rhino/rhino_1.png',
+      categoria: 'Sincrónicas',
+      enlace: 'https://avamotosvzla.com/motos/moto/rhino',
+      motor: '4 tiempos, monocilíndrico',
+      cilindrada: '150 cc',
+      potencia: '11.8 kW a 7500 rpm',
+      torque: '18 Nm a 8000 rpm',
+      capacidad_combustible: '14 l',
+      frenos_delanteros: 'Banda',
+      frenos_traseros: 'Banda',
+      capacidad_carga: '270 kg'
+    }
+  ];
+
+  return rawList.map(item => ({
+    marca: 'Ava',
+    nombre: item.nombre,
+    precio: item.precio,
+    imagen: item.imagen,
+    imagenes: item.imagen ? [item.imagen] : [],
+    categoria: item.categoria,
+    enlace: item.enlace,
+    
+    motor: item.motor || null,
+    cilindrada: item.cilindrada || null,
+    potencia: item.potencia || null,
+    torque: item.torque || null,
+    enfriamiento: item.enfriamiento || 'Aire',
+    transmision: item.transmision || null,
+    embrague: item.embrague || null,
+    suspension_delantera: item.suspension_delantera || null,
+    suspension_trasera: item.suspension_trasera || null,
+    frenos_delanteros: item.frenos_delanteros || null,
+    frenos_traseros: item.frenos_traseros || null,
+    frenado: null,
+    caucho_delantero: null,
+    caucho_trasero: null,
+    capacidad_combustible: item.capacidad_combustible || null,
+    colores: null,
+    sistema_arranque: item.sistema_arranque || null,
+    encendido: null,
+    peso: null,
+    capacidad_carga: item.capacidad_carga || null,
+    garantia: '24 meses / 24.000 km',
+    velocidad_maxima: item.velocidad_maxima || null,
+    rendimiento_gasolina: item.rendimiento_gasolina || null,
+    inclinacion_barras: null,
+    capacidad_ascenso: null,
+    bateria: null,
+    fusibles: null,
+    aforo_aceite_motor: null,
+    bujias: null,
+    faro: null,
+    luz_freno: null,
+    luces_cruce: null,
+    longitud_total: null,
+    ancho_total: null,
+    altura_total: null,
+    distancia_ejes: item.distancia_ejes || null,
+    dimension_caja: null,
+    unidad_final: null,
+    diametro_carrera: null,
+    relacion_compresion: item.relacion_compresion || null,
+    sistema_combustible: null
+  }));
+}
+
 async function sync(closePool = false) {
   const startTime = new Date();
   console.log(`Iniciando sincronización completa: ${startTime.toISOString()}`);
@@ -698,8 +1067,16 @@ async function sync(closePool = false) {
     } catch (e) {
       console.error("❌ Error al obtener Toro, se omitirá sincronización de Toro:", e.message);
     }
+
+    // 2d. Fetch data from AVA
+    let avaMotos = [];
+    try {
+      avaMotos = await fetchAvaMotos();
+    } catch (e) {
+      console.error("❌ Error al obtener AVA, se omitirá sincronización de AVA:", e.message);
+    }
     
-    const allMotos = [...beraMotos, ...empireMotos, ...tvsMotos, ...toroMotos];
+    const allMotos = [...beraMotos, ...empireMotos, ...tvsMotos, ...toroMotos, ...avaMotos];
     
     if (allMotos.length === 0) {
       console.log("⚠️ No se obtuvieron productos para guardar. Abortando.");
@@ -838,6 +1215,17 @@ async function sync(closePool = false) {
       `;
       const res = await client.query(deactivateToroQuery, [startTime]);
       console.log(`Desactivados ${res.rowCount} productos de Toro.`);
+    }
+
+    if (avaMotos.length > 0) {
+      console.log("--- Desactivando productos descontinuados de Ava ---");
+      const deactivateAvaQuery = `
+        UPDATE public.motos
+        SET active = FALSE
+        WHERE marca = 'Ava' AND updated_at < $1;
+      `;
+      const res = await client.query(deactivateAvaQuery, [startTime]);
+      console.log(`Desactivados ${res.rowCount} productos de Ava.`);
     }
     
     console.log("🎉 Sincronización finalizada exitosamente con especificaciones.");

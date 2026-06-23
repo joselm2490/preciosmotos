@@ -42,12 +42,12 @@ async function iniciarApp() {
             container.innerHTML = `
                 <div class="loader-container">
                     <div class="spinner"></div>
-                    <p>Consultando base de datos (Bera, Empire, TVS y Toro)...</p>
+                    <p>Consultando base de datos (Bera, Empire, TVS, Toro y AVA)...</p>
                 </div>
             `;
         }
 
-        const [resBera, resEmpire, resTvs, resToro] = await Promise.all([
+        const [resBera, resEmpire, resTvs, resToro, resAva] = await Promise.all([
             fetch('/api/bera').then(r => r.json()).catch(err => {
                 console.error("Error al cargar Bera:", err);
                 return [];
@@ -62,6 +62,10 @@ async function iniciarApp() {
             }),
             fetch('/api/toro').then(r => r.json()).catch(err => {
                 console.error("Error al cargar Toro:", err);
+                return [];
+            }),
+            fetch('/api/ava').then(r => r.json()).catch(err => {
+                console.error("Error al cargar AVA:", err);
                 return [];
             })
         ]);
@@ -199,7 +203,40 @@ async function iniciarApp() {
             rendimiento_gasolina: p.rendimiento_gasolina || ''
         }));
 
-        window.allMotos = [...beraMotos, ...empireMotos, ...tvsMotos, ...toroMotos];
+        const avaMotos = resAva.map(p => ({
+            id: p.id,
+            name: p.name || p.nombre,
+            brand: 'Ava',
+            price: parseFloat(p.prices?.price || 0),
+            category: p.categories?.[0]?.name || 'Otros',
+            image: p.images?.[0]?.src || p.imagen || '',
+            url: p.permalink || p.enlace || '',
+            
+            // Especificaciones técnicas para exportar
+            motor: p.motor || '',
+            cilindrada: p.cilindrada || '',
+            potencia: p.potencia || '',
+            torque: p.torque || '',
+            enfriamiento: p.enfriamiento || '',
+            transmision: p.transmision || '',
+            embrague: p.embrague || '',
+            suspension_delantera: p.suspension_delantera || '',
+            suspension_trasera: p.suspension_trasera || '',
+            frenos_delanteros: p.frenos_delanteros || '',
+            frenos_traseros: p.frenos_traseros || '',
+            caucho_delantero: p.caucho_delantero || '',
+            caucho_trasero: p.caucho_trasero || '',
+            capacidad_combustible: p.capacidad_combustible || '',
+            colores: p.colores || '',
+            sistema_arranque: p.sistema_arranque || p.encendido || '',
+            peso: p.peso || '',
+            capacidad_carga: p.capacidad_carga || '',
+            garantia: p.garantia || '',
+            velocidad_maxima: p.velocidad_maxima || '',
+            rendimiento_gasolina: p.rendimiento_gasolina || ''
+        }));
+
+        window.allMotos = [...beraMotos, ...empireMotos, ...tvsMotos, ...toroMotos, ...avaMotos];
         console.log(`Cargadas ${window.allMotos.length} motos en total.`);
 
         // Primer filtrado y renderizado
@@ -231,7 +268,8 @@ function filtrarYRenderizar() {
                              (brandVal === 'Bera' && moto.brand === 'Bera') || 
                              (brandVal === 'Empire' && moto.brand === 'Empire') ||
                              (brandVal === 'TVS' && moto.brand === 'TVS') ||
-                             (brandVal === 'Toro' && moto.brand === 'Toro');
+                             (brandVal === 'Toro' && moto.brand === 'Toro') ||
+                             (brandVal === 'Ava' && moto.brand === 'Ava');
         
         // 3. Filtro por categoría
         const matchesCategory = (catVal === 'Todas') || (moto.category === catVal);
