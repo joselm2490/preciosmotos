@@ -96,125 +96,127 @@ async function fetchBeraMotos() {
   });
 }
 
-// Scrape Empire product details page
-async function scrapeEmpireProductDetails(url) {
-  try {
-    const { data: html } = await axios.get(url, {
-      headers: { 
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36' 
-      },
-      timeout: 15000
-    });
-    
-    const $ = cheerio.load(html);
-    const specs = {};
-    
-    // Parse wpb_tab attributes
-    $('.wpb_tab .nectar-hor-list-item').each((i, itemEl) => {
-      const key = $(itemEl).find('.nectar-list-item h4').text().trim().toLowerCase();
-      const val = $(itemEl).find('.nectar-list-item').eq(1).text().trim();
-      if (key && val) {
-        specs[key] = val;
-      }
-    });
-    
-    // Extract gallery images
-    const images = [];
-    $('.woocommerce-product-gallery__image img, .nectar-fancy-box img, .single-product img').each((i, img) => {
-      let src = $(img).attr('data-nectar-img-src') || $(img).attr('data-src') || $(img).attr('src') || '';
-      if (src && !src.includes('logo') && !src.includes('icon') && !src.includes('banner') && !src.includes('header')) {
-        if (src.startsWith('/')) {
-          src = `https://www.empirekeeway.com${src}`;
-        }
-        if (!images.includes(src)) {
-          images.push(src);
-        }
-      }
-    });
-    
-    return { specs, images };
-  } catch (e) {
-    console.error(`⚠️ Error scraping Empire details for ${url}:`, e.message);
-    return { specs: {}, images: [] };
+// Parse technical specifications from WPBakery description shortcodes
+function parseShortcodes(description) {
+  const specs = {};
+  if (!description) return specs;
+  
+  // Robust regex that accounts for smart quotes U+00BB (»), standard quotes, and the WordPress double prime bug (&#8243;)
+  const regex = /col_1_content=[»"'](.*?)(?:[»"']|&#8243;)\s+col_2_content=[»"'](.*?)(?:[»"']|&#8243;)/g;
+  let match;
+  while ((match = regex.exec(description)) !== null) {
+    const key = match[1].trim().toLowerCase();
+    const value = match[2].trim();
+    specs[key] = value;
   }
+  return specs;
 }
 
-// Sleep helper
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const priceOverrides = {
+  'matrix ii': 1589,
+  'matrix lite': 1379,
+  'ek xpress lite': 1179,
+  'tx ii 150': 1575,
+  'v302c': 6199,
+  'rk 250': 2135,
+  'qj motor srt700s': 9050,
+  'qj motor srt 550x': 7935,
+  'qj motor srt550': 7935,
+  'qj motor srt700sx': 9050
+};
+
+function categorizeEmpireMoto(nombre, specs) {
+  const nameLower = nombre.toLowerCase().trim();
+  
+  // 1. Eléctricas
+  if (nameLower.includes('e-bike') || nameLower.includes('e-go') || nameLower.includes('classica') || nameLower.includes('gev')) {
+    return 'Eléctricas';
+  }
+  
+  // 2. Carga
+  const caja = specs['tamaño de la caja'];
+  const hasCaja = caja && caja.trim() !== '' && caja.trim().toUpperCase() !== 'N/A';
+  const hasRetroceso = (specs['transmisión'] && specs['transmisión'].toLowerCase().includes('retroceso')) || 
+                       (specs['tipo'] && specs['tipo'].toLowerCase().includes('retroceso'));
+  if (nameLower.includes('atlas') || hasRetroceso || hasCaja) {
+    return 'Carga';
+  }
+  
+  // 3. Automáticas (Scooters)
+  const isAutoTrans = (specs['transmisión'] && (specs['transmisión'].toLowerCase().includes('automática') || specs['transmisión'].toLowerCase().includes('automatico'))) ||
+                      (specs['tipo'] && (specs['tipo'].toLowerCase().includes('automática') || specs['tipo'].toLowerCase().includes('automatico')));
+  if (nameLower.includes('outlook') || nameLower.includes('matrix') || nameLower.includes('scooter') || nameLower.includes('fort') || isAutoTrans) {
+    return 'Automáticas';
+  }
+  
+  // 4. Sincrónicas (Manual transmission / gears)
+  const isSyncTrans = (specs['transmisión'] && (specs['transmisión'].toLowerCase().includes('velocidades') || specs['transmisión'].toLowerCase().includes('sincrónica') || specs['transmisión'].toLowerCase().includes('sincronica') || specs['transmisión'].toLowerCase().includes('manual'))) ||
+                      (specs['tipo'] && (specs['tipo'].toLowerCase().includes('velocidades') || specs['tipo'].toLowerCase().includes('sincrónica') || specs['tipo'].toLowerCase().includes('sincronica') || specs['tipo'].toLowerCase().includes('manual')));
+  if (nameLower.includes('xpress') || nameLower.includes('horse') || nameLower.includes('owen') || nameLower.includes('tx') || nameLower.includes('ek') || isSyncTrans) {
+    return 'Sincrónicas';
+  }
+  
+  return 'Otros';
+}
 
 async function fetchEmpireMotos() {
-  console.log("--- Scraping Empire products ---");
-  const { data: html } = await axios.get('https://www.empirekeeway.com/productos/', {
-    headers: { 
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36' 
-    }
+  console.log("--- Fetching Empire products from REST API ---");
+  const response = await axios.get("https://www.empirekeeway.com/wp-json/wc/store/v1/products?per_page=100", {
+    headers: { 'User-Agent': 'Mozilla/5.0' }
   });
-
-  const $ = cheerio.load(html);
-  const products = [];
-  const excludedKeywords = ['espejo', 'retrovisor', 'portabanda', 'repuesto', 'accesorio', 'repuestos'];
-
-  $('ul.products li.product').each((i, el) => {
-    const $el = $(el);
-    
-    const nombre = $el.find('.woocommerce-loop-product__title, h2, h3').first().text().trim();
-    if (!nombre) return;
-    
-    // Filtrar accesorios
-    const lowercaseNombre = nombre.toLowerCase();
-    const isAccessory = excludedKeywords.some(keyword => lowercaseNombre.includes(keyword));
-    if (isAccessory) return;
-
-    const enlace = $el.find('a').first().attr('href') || '';
-    
-    const imgEl = $el.find('img').first();
-    let imagen = imgEl.attr('data-nectar-img-src') || imgEl.attr('data-src') || imgEl.attr('src') || '';
-    
-    if (imagen && imagen.startsWith('/')) {
-      imagen = `https://www.empirekeeway.com${imagen}`;
-    }
-
-    const priceText = $el.find('.price').text().trim();
-    const precio = parsePrice(priceText);
-
-    products.push({
-      marca: 'Empire',
-      nombre,
-      precio,
-      imagen,
-      enlace
+  
+  console.log(`Fetched ${response.data.length} Empire products from API.`);
+  
+  const excludedKeywords = ['espejo', 'retrovisor', 'portabanda', 'repuesto', 'accesorio', 'repuestos', 'tapa', 'stop', 'tanque', 'rulera'];
+  const filtered = response.data.filter(p => {
+    const nameLower = p.name.toLowerCase();
+    return !excludedKeywords.some(keyword => nameLower.includes(keyword));
+  });
+  
+  console.log(`Filtered to ${filtered.length} Empire motorcycles.`);
+  
+  return filtered.map(p => {
+    const rawImages = p.images?.map(img => img.src) || [];
+    const images = rawImages.map(src => {
+      if (src && src.startsWith('/')) {
+        return `https://www.empirekeeway.com${src}`;
+      }
+      return src;
     });
-  });
-
-  console.log(`Found ${products.length} Empire products. Scraping individual detail pages...`);
-  
-  const fullProducts = [];
-  
-  for (let i = 0; i < products.length; i++) {
-    const p = products[i];
-    console.log(`[${i+1}/${products.length}] Scraping details for: ${p.nombre}...`);
+    const mainImage = images[0] || '';
+    const specs = parseShortcodes(p.description);
     
-    const details = await scrapeEmpireProductDetails(p.enlace);
-    const specs = details.specs;
-    
-    // Si no se encuentran imágenes en el detalle, usamos la de la grilla principal
-    const images = details.images.length > 0 ? details.images : [p.imagen];
-    const mainImage = images[0] || p.imagen;
-    
-    // Intentar extraer cilindrada del motor si no existe una clave directa
+    // Extract displacement from engine if not directly specified
     let cilindrada = specs['cilindrada'];
     if (!cilindrada && specs['motor']) {
       const match = specs['motor'].match(/\d+cc/i);
       if (match) cilindrada = match[0];
     }
     
-    fullProducts.push({
-      ...p,
+    // Parse price dynamically
+    let precio = parseFloat(p.prices?.price || 0) / 100;
+    
+    // Handle variable products that return 1.0 or 0.0 but have a price range max_amount
+    if ((precio === 1.0 || precio === 0.0) && p.prices?.price_range?.max_amount) {
+      precio = parseFloat(p.prices.price_range.max_amount) / 100;
+    }
+    
+    // Apply manual price overrides for specific catalog models with database placeholders
+    const nameLower = p.name.toLowerCase().trim();
+    if (priceOverrides[nameLower] !== undefined) {
+      precio = priceOverrides[nameLower];
+    }
+    
+    return {
+      marca: 'Empire',
+      nombre: p.name,
+      precio,
       imagen: mainImage,
       imagenes: images,
-      categoria: 'Motos',
+      categoria: categorizeEmpireMoto(p.name, specs),
+      enlace: p.permalink || '',
       
-      // Especificaciones
+      // Specifications
       motor: specs['motor'] || null,
       cilindrada: cilindrada || null,
       potencia: specs['potencia máxima'] || null,
@@ -230,7 +232,7 @@ async function fetchEmpireMotos() {
       caucho_delantero: specs['caucho delantero'] || null,
       caucho_trasero: specs['caucho trasero'] || null,
       capacidad_combustible: specs['capacidad de combistible'] || specs['capacidad de combustible'] || null,
-      colores: specs['colores'] || null,
+      colores: specs['colores'] || specs['color'] || null,
       sistema_arranque: specs['encendido'] || null,
       encendido: specs['encendido'] || null,
       peso: specs['peso'] || null,
@@ -239,14 +241,14 @@ async function fetchEmpireMotos() {
       velocidad_maxima: null,
       rendimiento_gasolina: null,
       
-      // Vacíos para Bera
+      // Empty for Bera
       inclinacion_barras: null,
       capacidad_ascenso: null,
       bateria: null,
       fusibles: null,
       aforo_aceite_motor: null,
       
-      // Especificaciones específicas de Empire
+      // Empire specific specifications
       bujias: specs['bujías'] || specs['bujía'] || specs['bujias'] || null,
       faro: specs['faro'] || null,
       luz_freno: specs['luz de freno'] || null,
@@ -260,14 +262,8 @@ async function fetchEmpireMotos() {
       diametro_carrera: specs['diámetro x carrera'] || null,
       relacion_compresion: specs['relación de compresión'] || null,
       sistema_combustible: specs['sistema de combustible'] || null
-    });
-    
-    // Pequeño retardo de 100ms
-    await sleep(100);
-  }
-
-  console.log(`Scraped full details for ${fullProducts.length} Empire products.`);
-  return fullProducts;
+    };
+  });
 }
 
 async function sync(closePool = false) {

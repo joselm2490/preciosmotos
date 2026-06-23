@@ -3,17 +3,86 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>MotoMonitor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MotoMonitor - Catálogo de Precios</title>
     <link rel="stylesheet" href="static/css/style.css">
+    <!-- SheetJS para exportar a Excel en el cliente -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 
 <body>
-    <nav>
-        <button onclick="renderBera()">Ver Bera</button>
-        <button onclick="renderEmpire()">Ver Empire</button>
-        <button id="btnActualizarDb" onclick="actualizarBaseDeDatos()" style="background-color: #27ae60;">Actualizar BD (Sincronizar)</button>
-    </nav>
-    <main id="catalogContainer"></main>
+    <header class="main-header">
+        <h1>MotoMonitor</h1>
+        <p class="subtitle">Comparador y catálogo en tiempo real de motos Bera y Empire Keeway</p>
+    </header>
+
+    <div class="control-panel">
+        <!-- Barra de filtros -->
+        <div class="filter-bar">
+            <div class="filter-group search-box">
+                <label for="searchName">Buscar Moto</label>
+                <input type="text" id="searchName" placeholder="Ej: SBR, Xpress, V302C...">
+            </div>
+            
+            <div class="filter-group">
+                <label for="filterBrand">Marca</label>
+                <select id="filterBrand">
+                    <option value="Todos">Todas las Marcas</option>
+                    <option value="Bera">Bera</option>
+                    <option value="Empire">Empire Keeway</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="filterCategory">Categoría</label>
+                <select id="filterCategory">
+                    <option value="Todas">Todas las Categorías</option>
+                    <option value="Automáticas">Automáticas</option>
+                    <option value="Sincrónicas">Sincrónicas</option>
+                    <option value="Carga">Carga</option>
+                    <option value="Eléctricas">Eléctricas</option>
+                    <option value="Otros">Otros</option>
+                </select>
+            </div>
+            
+            <div class="filter-group price-inputs">
+                <label>Precio (USD)</label>
+                <div class="price-range">
+                    <input type="number" id="filterMinPrice" placeholder="Mín" min="0">
+                    <span>-</span>
+                    <input type="number" id="filterMaxPrice" placeholder="Máx" min="0">
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button id="btnExportExcel" class="btn-excel">
+                    <svg class="btn-icon" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                    </svg>
+                    Exportar a Excel
+                </button>
+                <button id="btnActualizarDb" class="btn-sync" onclick="actualizarBaseDeDatos()">
+                    <svg class="btn-icon" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M19 8l-4 4h3c0 3.31-2.69 6-6 6-1.01 0-1.97-.25-2.8-.7l-1.46 1.46C8.97 19.54 10.43 20 12 20c4.42 0 8-3.58 8-8h3l-4-4zM6 12c0-3.31 2.69-6 6-6 1.01 0 1.97.25 2.8.7l1.46-1.46C15.03 4.46 13.57 4 12 4c-4.42 0-8 3.58-8 8H1l4 4 4-4H6z"/>
+                    </svg>
+                    Sincronizar BD
+                </button>
+            </div>
+        </div>
+        
+        <!-- Indicador de Tasa y estadísticas rápidas -->
+        <div class="meta-info">
+            <span id="rateIndicator" class="badge">Tasa: Cargando...</span>
+            <span id="totalIndicator" class="badge">Cargando motos...</span>
+        </div>
+    </div>
+
+    <main id="catalogContainer">
+        <div class="loader-container">
+            <div class="spinner"></div>
+            <p>Cargando catálogo unificado...</p>
+        </div>
+    </main>
 
     <!-- 1. Configuración primero -->
     <script src="static/js/config.js"></script>
@@ -21,7 +90,7 @@
     <!-- 2. Renderizador después -->
     <script src="static/js/ui_renderer.js"></script>
 
-    <!-- 3. Los motores de datos al final -->
+    <!-- 3. Los motores de datos al final (compatibilidad) -->
     <script src="static/js/motosbera.js"></script>
     <script src="static/js/motosempire.js"></script>
     <script>fetchTasaCambio();</script>

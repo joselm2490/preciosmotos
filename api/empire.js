@@ -10,7 +10,7 @@ module.exports = async function handler(req, res) {
     
     const result = await client.query(
       `SELECT 
-        nombre, precio, imagen, imagenes, enlace,
+        nombre, precio, imagen, imagenes, categoria, enlace,
         motor, cilindrada, potencia, torque, enfriamiento, transmision, embrague,
         suspension_delantera, suspension_trasera, frenos_delanteros, frenos_traseros, frenado,
         caucho_delantero, caucho_trasero, capacidad_combustible, colores, sistema_arranque, encendido,
@@ -25,11 +25,20 @@ module.exports = async function handler(req, res) {
     
     // Mapeamos al formato compatible
     const products = result.rows.map(row => ({
+      // Bera Compatibility
+      name: row.nombre,
+      categories: [{ name: row.categoria || 'Otros' }],
+      prices: { price: parseFloat(row.precio) },
+      images: row.imagen ? [{ src: row.imagen }] : [],
+      permalink: row.enlace || '',
+
+      // Direct fields
       nombre: row.nombre,
       precio: parseFloat(row.precio),
       imagen: row.imagen || '',
       imagenes: row.imagenes || [],
       enlace: row.enlace || '',
+      categoria: row.categoria || 'Otros',
       
       // Especificaciones detalladas
       motor: row.motor || null,
