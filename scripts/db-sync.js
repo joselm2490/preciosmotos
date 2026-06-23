@@ -1026,6 +1026,205 @@ async function fetchAvaMotos() {
   }));
 }
 
+async function fetchEscudaMotos() {
+  console.log("--- Loading Escuda Motorcycles static products ---");
+  const rawList = [
+    {
+      nombre: 'Escuda Alexa',
+      precio: 2890.00,
+      imagen: 'https://escudamotorcycles.com/wp-content/uploads/2025/09/alexa-portada-landing3.webp',
+      categoria: 'Automáticas',
+      enlace: 'https://escudamotorcycles.com/motos/alexa/',
+      motor: '180 cc, 1 cilindro',
+      cilindrada: '180 cc',
+      enfriamiento: 'Aire',
+      transmision: 'Automática',
+      frenos_delanteros: 'Disco delantero y trasero (ABS)',
+      frenos_traseros: 'Disco delantero y trasero (ABS)',
+      capacidad_combustible: '12 Litros',
+      colores: 'Gris, Azul, Verde, Jade',
+      sistema_arranque: 'Eléctrico Keyless',
+      peso: '140 kg',
+      capacidad_carga: '310 kg',
+      velocidad_maxima: '130 km/h',
+      bateria: '12 V gel',
+      distancia_ejes: '1350 mm'
+    },
+    {
+      nombre: 'Escuda Hero',
+      precio: 1020.00,
+      imagen: 'https://escudamotorcycles.com/wp-content/uploads/2024/07/heroblancalanding2024.webp',
+      categoria: 'Sincrónicas',
+      enlace: 'https://escudamotorcycles.com/motos/hero/',
+      motor: '150 cc, 1 cilindro',
+      cilindrada: '150 cc',
+      enfriamiento: 'Aire',
+      transmision: '5 Velocidades - Sincrónica',
+      frenos_delanteros: 'Disco',
+      frenos_traseros: 'Banda',
+      capacidad_combustible: '8.5 Litros',
+      colores: 'Rojo, Negro, Blanco, Azul, Dorado',
+      sistema_arranque: 'Eléctrico, pedal, alarma y control remoto',
+      peso: '107 kg',
+      capacidad_carga: '150 kg (Máx: 190 kg)',
+      velocidad_maxima: '100 km/h',
+      bateria: '12 V gel',
+      longitud_total: 'Largo: 1935 mm',
+      ancho_total: 'Ancho: 740 mm',
+      altura_total: 'Alto: 1030 mm',
+      distancia_ejes: '1230 mm'
+    },
+    {
+      nombre: 'Escuda Adventure',
+      precio: 1360.00,
+      imagen: 'https://escudamotorcycles.com/wp-content/uploads/2023/11/portada-adventure-azul-metal.webp',
+      categoria: 'Sincrónicas',
+      enlace: 'https://escudamotorcycles.com/motos/adventure/',
+      motor: '150 cc, 1 cilindro',
+      cilindrada: '150 cc',
+      enfriamiento: 'Aire',
+      transmision: '5 Velocidades - Sincrónica',
+      frenos_delanteros: 'Disco',
+      frenos_traseros: 'Banda',
+      capacidad_combustible: '12.5 Litros',
+      colores: 'Rojo, Negro, Azul',
+      sistema_arranque: 'Eléctrico, pedal, alarma y control remoto',
+      peso: '107 kg',
+      capacidad_carga: '150 kg (Máx: 190 kg)',
+      velocidad_maxima: '100 km/h',
+      bateria: '12 V gel',
+      longitud_total: 'Largo: 1976 mm',
+      ancho_total: 'Ancho: 780 mm',
+      altura_total: 'Alto: 1010 mm',
+      distancia_ejes: '1250 mm'
+    },
+    {
+      nombre: 'Escuda Extreme',
+      precio: 1420.00,
+      imagen: 'https://escudamotorcycles.com/wp-content/uploads/2024/02/extreme-blanca-portada-landing5.webp',
+      categoria: 'Sincrónicas',
+      enlace: 'https://escudamotorcycles.com/motos/extreme/',
+      motor: '150 cc, 1 cilindro',
+      cilindrada: '150 cc',
+      enfriamiento: 'Aire',
+      transmision: '5 Velocidades - Sincrónica',
+      frenos_delanteros: 'Disco',
+      frenos_traseros: 'Banda',
+      capacidad_combustible: '15 Litros',
+      colores: 'Rojo, Negro, Blanco',
+      sistema_arranque: 'Eléctrico, pedal, alarma y control remoto',
+      peso: '118 kg',
+      capacidad_carga: '150 kg (Máx: 190 kg)',
+      velocidad_maxima: '100 km/h',
+      bateria: '12 V gel',
+      longitud_total: 'Largo: 2040 mm',
+      ancho_total: 'Ancho: 765 mm',
+      altura_total: 'Alto: 1085 mm',
+      distancia_ejes: '1285 mm'
+    },
+    {
+      nombre: 'Escuda EM200',
+      precio: 2250.00,
+      imagen: 'https://escudamotorcycles.com/wp-content/uploads/2024/02/em200-roja-portada-landing.webp',
+      categoria: 'Sincrónicas',
+      enlace: 'https://escudamotorcycles.com/motos/em200/',
+      motor: '200 cc, 1 cilindro',
+      cilindrada: '200 cc',
+      enfriamiento: 'Aire',
+      transmision: '6 Velocidades - Sincrónica',
+      frenos_delanteros: 'Disco (11.5")',
+      frenos_traseros: 'Disco (8.5")',
+      capacidad_combustible: '12 Litros',
+      colores: 'Rojo, Negro, Blanco',
+      sistema_arranque: 'Eléctrico con encendido remoto',
+      peso: '130 kg',
+      capacidad_carga: '170 kg (Máx: 300 kg)',
+      velocidad_maxima: '160 km/h',
+      bateria: '12 V gel',
+      longitud_total: 'Largo: 2040 mm',
+      ancho_total: 'Ancho: 750 mm',
+      altura_total: 'Alto: 1160 mm',
+      distancia_ejes: '1350 mm'
+    },
+    {
+      nombre: 'Escuda New Jog',
+      precio: 1199.00,
+      imagen: 'https://escudamotorcycles.com/wp-content/uploads/2024/08/portada-newjog-gris6.webp',
+      categoria: 'Automáticas',
+      enlace: 'https://escudamotorcycles.com/motos/new-jog/',
+      motor: '150 cc, 1 cilindro',
+      cilindrada: '150 cc',
+      enfriamiento: 'Aire',
+      transmision: 'Automática',
+      frenos_delanteros: 'Disco',
+      frenos_traseros: 'Banda',
+      capacidad_combustible: '5 Litros',
+      colores: 'Rojo, Negro, Azul, Blanco',
+      sistema_arranque: 'Eléctrico, pedal',
+      peso: '95 kg',
+      capacidad_carga: '150 kg',
+      velocidad_maxima: '110 km/h',
+      bateria: '12 V gel',
+      longitud_total: 'Largo: 1705 mm',
+      ancho_total: 'Ancho: 680 mm',
+      altura_total: 'Alto: 1070 mm',
+      distancia_ejes: '1220 mm'
+    }
+  ];
+
+  return rawList.map(item => ({
+    marca: 'Escuda',
+    nombre: item.nombre,
+    precio: item.precio,
+    imagen: item.imagen,
+    imagenes: item.imagen ? [item.imagen] : [],
+    categoria: item.categoria,
+    enlace: item.enlace,
+    
+    motor: item.motor || null,
+    cilindrada: item.cilindrada || null,
+    potencia: item.potencia || null,
+    torque: item.torque || null,
+    enfriamiento: item.enfriamiento || 'Aire',
+    transmision: item.transmision || null,
+    embrague: item.embrague || null,
+    suspension_delantera: item.suspension_delantera || null,
+    suspension_trasera: item.suspension_trasera || null,
+    frenos_delanteros: item.frenos_delanteros || null,
+    frenos_traseros: item.frenos_traseros || null,
+    frenado: null,
+    caucho_delantero: null,
+    caucho_trasero: null,
+    capacidad_combustible: item.capacidad_combustible || null,
+    colores: item.colores || null,
+    sistema_arranque: item.sistema_arranque || null,
+    encendido: null,
+    peso: item.peso || null,
+    capacidad_carga: item.capacidad_carga || null,
+    garantia: '24 meses / 24.000 km',
+    velocidad_maxima: item.velocidad_maxima || null,
+    rendimiento_gasolina: item.rendimiento_gasolina || null,
+    inclinacion_barras: null,
+    capacidad_ascenso: null,
+    bateria: item.bateria || null,
+    fusibles: null,
+    aforo_aceite_motor: null,
+    bujias: null,
+    faro: null,
+    luz_freno: null,
+    luces_cruce: null,
+    longitud_total: item.longitud_total || null,
+    ancho_total: item.ancho_total || null,
+    altura_total: item.altura_total || null,
+    distancia_ejes: item.distancia_ejes || null,
+    dimension_caja: null,
+    unidad_final: null,
+    diametro_carrera: null,
+    relacion_compresion: null,
+    sistema_combustible: null
+  }));
+}
+
 async function sync(closePool = false) {
   const startTime = new Date();
   console.log(`Iniciando sincronización completa: ${startTime.toISOString()}`);
@@ -1075,8 +1274,16 @@ async function sync(closePool = false) {
     } catch (e) {
       console.error("❌ Error al obtener AVA, se omitirá sincronización de AVA:", e.message);
     }
+
+    // 2e. Fetch data from Escuda
+    let escudaMotos = [];
+    try {
+      escudaMotos = await fetchEscudaMotos();
+    } catch (e) {
+      console.error("❌ Error al obtener Escuda, se omitirá sincronización de Escuda:", e.message);
+    }
     
-    const allMotos = [...beraMotos, ...empireMotos, ...tvsMotos, ...toroMotos, ...avaMotos];
+    const allMotos = [...beraMotos, ...empireMotos, ...tvsMotos, ...toroMotos, ...avaMotos, ...escudaMotos];
     
     if (allMotos.length === 0) {
       console.log("⚠️ No se obtuvieron productos para guardar. Abortando.");
@@ -1231,6 +1438,17 @@ async function sync(closePool = false) {
       `;
       const res = await client.query(deactivateAvaQuery, [startTime]);
       console.log(`Desactivados ${res.rowCount} productos de Ava.`);
+    }
+
+    if (escudaMotos.length > 0) {
+      console.log("--- Desactivando productos descontinuados de Escuda ---");
+      const deactivateEscudaQuery = `
+        UPDATE public.motos
+        SET active = FALSE
+        WHERE marca = 'Escuda' AND updated_at < $1;
+      `;
+      const res = await client.query(deactivateEscudaQuery, [startTime]);
+      console.log(`Desactivados ${res.rowCount} productos de Escuda.`);
     }
     
     console.log("🎉 Sincronización finalizada exitosamente con especificaciones.");
