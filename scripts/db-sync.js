@@ -454,6 +454,209 @@ async function fetchTvsMotos() {
   return results;
 }
 
+const toroPriceOverrides = {
+  'Toro Jaguar TR150': 990.00,
+  'Toro León TR200': 1290.00,
+  'Toro Rex TR250': 1590.00,
+  'Toro Power TR180': 1840.00,
+  'Toro Tank TR180': 2500.00,
+  'Toro Fox TR180': 1450.00
+};
+
+// Static spec mappings for the 6 models
+const toroSpecs = {
+  'Toro Jaguar TR150': {
+    motor: 'Loncin, 150cc, monocilíndrico, 4 tiempos',
+    cilindrada: '150 cc',
+    transmision: 'Sincrónica de 5 velocidades',
+    frenos_delanteros: 'Disco',
+    frenos_traseros: 'Tambor',
+    capacidad_combustible: '14 l',
+    sistema_arranque: 'Eléctrico / Pedal',
+    enfriamiento: 'Aire'
+  },
+  'Toro León TR200': {
+    motor: 'Loncin, 200cc, monocilíndrico, 4 tiempos',
+    cilindrada: '200 cc',
+    potencia: '13 HP',
+    torque: '13 Nm a 6000 rpm',
+    transmision: 'Sincrónica de 5 velocidades',
+    frenos_delanteros: 'Disco',
+    frenos_traseros: 'Tambor',
+    capacidad_combustible: '14 l',
+    suspension_delantera: 'Telescópica con aceite',
+    suspension_trasera: 'Doble amortiguador (dualshock)',
+    sistema_arranque: 'Eléctrico / Pedal',
+    enfriamiento: 'Aire'
+  },
+  'Toro Rex TR250': {
+    motor: 'Loncin, 250cc, monocilíndrico, 4 tiempos',
+    cilindrada: '250 cc',
+    potencia: '15 HP',
+    torque: '17 Nm a 6000 rpm',
+    transmision: 'Sincrónica de 6 velocidades',
+    frenos_delanteros: 'Disco',
+    frenos_traseros: 'Disco',
+    capacidad_combustible: '10 l',
+    suspension_delantera: 'Telescópica',
+    suspension_trasera: 'Monoshock',
+    sistema_arranque: 'Eléctrico / Pedal',
+    enfriamiento: 'Aire'
+  },
+  'Toro Power TR180': {
+    motor: '180cc, monocilíndrico, 4 tiempos',
+    cilindrada: '180 cc',
+    potencia: '11 HP',
+    torque: '12 Nm a 6000 rpm',
+    transmision: 'Automática CVT',
+    frenos_delanteros: 'Disco',
+    frenos_traseros: 'Disco',
+    capacidad_combustible: '8 l',
+    suspension_delantera: 'Telescópica con aceite',
+    suspension_trasera: 'Doble amortiguador (dualshock)',
+    enfriamiento: 'Aire'
+  },
+  'Toro Tank TR180': {
+    motor: '180cc, monocilíndrico, 4 tiempos',
+    cilindrada: '180 cc',
+    potencia: '11 HP',
+    torque: '12 Nm a 6000 rpm',
+    transmision: 'Automática CVT',
+    frenos_delanteros: 'Disco',
+    frenos_traseros: 'Disco',
+    capacidad_combustible: '7 l',
+    suspension_delantera: 'Telescópica con aceite',
+    suspension_trasera: 'Doble amortiguador (dualshock)',
+    enfriamiento: 'Aire'
+  },
+  'Toro Fox TR180': {
+    motor: '180cc, monocilíndrico, 4 tiempos',
+    cilindrada: '180 cc',
+    potencia: '11 HP',
+    torque: '12 Nm a 6000 rpm',
+    transmision: 'Automática CVT',
+    frenos_delanteros: 'Disco',
+    frenos_traseros: 'Disco',
+    capacidad_combustible: '7 l',
+    suspension_delantera: 'Telescópica con aceite',
+    suspension_trasera: 'Doble amortiguador (dualshock)',
+    enfriamiento: 'Aire'
+  }
+};
+
+const toroImageUrls = {
+  'Toro Jaguar TR150': 'https://toromotos.com/wp-content/uploads/2023/07/JAGUAR.png',
+  'Toro León TR200': 'https://toromotos.com/wp-content/uploads/2023/07/LEON.png',
+  'Toro Rex TR250': 'https://toromotos.com/wp-content/uploads/2023/07/REX.png',
+  'Toro Power TR180': 'https://toromotos.com/wp-content/uploads/2023/07/POWER.png',
+  'Toro Tank TR180': 'https://toromotos.com/wp-content/uploads/2023/07/TANK.png',
+  'Toro Fox TR180': 'https://toromotos.com/wp-content/uploads/2023/07/FOX.png'
+};
+
+async function fetchToroMotos() {
+  console.log("--- Fetching Toro products ---");
+  const mainUrl = "https://toromotos.com/inicio/";
+  
+  const { data: mainHtml } = await axios.get(mainUrl, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36',
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8'
+    },
+    timeout: 15000
+  });
+  
+  const $ = cheerio.load(mainHtml);
+  const results = [];
+  
+  $('a').each((i, el) => {
+    const href = $(el).attr('href');
+    if (href && href.includes('/download/')) {
+      const hrefClean = href.trim().replace(/%20$/, '');
+      const rawText = $(el).text().trim();
+      
+      let cleanName = '';
+      let categoria = 'Sincrónicas';
+      
+      if (rawText.includes('JAGUAR')) {
+        cleanName = 'Toro Jaguar TR150';
+      } else if (rawText.includes('LEÓN')) {
+        cleanName = 'Toro León TR200';
+      } else if (rawText.includes('REX')) {
+        cleanName = 'Toro Rex TR250';
+      } else if (rawText.includes('POWER')) {
+        cleanName = 'Toro Power TR180';
+        categoria = 'Automáticas';
+      } else if (rawText.includes('TANK')) {
+        cleanName = 'Toro Tank TR180';
+        categoria = 'Automáticas';
+      } else if (rawText.includes('FOX')) {
+        cleanName = 'Toro Fox TR180';
+        categoria = 'Automáticas';
+      }
+      
+      if (cleanName && !results.some(r => r.nombre === cleanName)) {
+        const specs = toroSpecs[cleanName] || {};
+        const image = toroImageUrls[cleanName] || '';
+        const precio = toroPriceOverrides[cleanName] || 0.0;
+        
+        results.push({
+          marca: 'Toro',
+          nombre: cleanName,
+          precio,
+          imagen: image,
+          imagenes: image ? [image] : [],
+          categoria,
+          enlace: hrefClean,
+          
+          motor: specs.motor || null,
+          cilindrada: specs.cilindrada || null,
+          potencia: specs.potencia || null,
+          torque: specs.torque || null,
+          enfriamiento: specs.enfriamiento || null,
+          transmision: specs.transmision || null,
+          embrague: specs.embrague || null,
+          suspension_delantera: specs.suspension_delantera || null,
+          suspension_trasera: specs.suspension_trasera || null,
+          frenos_delanteros: specs.frenos_delanteros || null,
+          frenos_traseros: specs.frenos_traseros || null,
+          frenado: null,
+          caucho_delantero: null,
+          caucho_trasero: null,
+          capacidad_combustible: specs.capacidad_combustible || null,
+          colores: null,
+          sistema_arranque: specs.sistema_arranque || null,
+          encendido: null,
+          peso: null,
+          capacidad_carga: null,
+          garantia: '24 meses / 24.000 km',
+          velocidad_maxima: null,
+          rendimiento_gasolina: null,
+          inclinacion_barras: null,
+          capacidad_ascenso: null,
+          bateria: null,
+          fusibles: null,
+          aforo_aceite_motor: null,
+          bujias: null,
+          faro: null,
+          luz_freno: null,
+          luces_cruce: null,
+          longitud_total: null,
+          ancho_total: null,
+          altura_total: null,
+          distancia_ejes: null,
+          dimension_caja: null,
+          unidad_final: null,
+          diametro_carrera: null,
+          relacion_compresion: null,
+          sistema_combustible: null
+        });
+      }
+    }
+  });
+  
+  return results;
+}
+
 async function sync(closePool = false) {
   const startTime = new Date();
   console.log(`Iniciando sincronización completa: ${startTime.toISOString()}`);
@@ -487,8 +690,16 @@ async function sync(closePool = false) {
     } catch (e) {
       console.error("❌ Error al obtener TVS, se omitirá sincronización de TVS:", e.message);
     }
+
+    // 2c. Fetch data from Toro
+    let toroMotos = [];
+    try {
+      toroMotos = await fetchToroMotos();
+    } catch (e) {
+      console.error("❌ Error al obtener Toro, se omitirá sincronización de Toro:", e.message);
+    }
     
-    const allMotos = [...beraMotos, ...empireMotos, ...tvsMotos];
+    const allMotos = [...beraMotos, ...empireMotos, ...tvsMotos, ...toroMotos];
     
     if (allMotos.length === 0) {
       console.log("⚠️ No se obtuvieron productos para guardar. Abortando.");
@@ -616,6 +827,17 @@ async function sync(closePool = false) {
       `;
       const res = await client.query(deactivateTvsQuery, [startTime]);
       console.log(`Desactivados ${res.rowCount} productos de TVS.`);
+    }
+
+    if (toroMotos.length > 0) {
+      console.log("--- Desactivando productos descontinuados de Toro ---");
+      const deactivateToroQuery = `
+        UPDATE public.motos
+        SET active = FALSE
+        WHERE marca = 'Toro' AND updated_at < $1;
+      `;
+      const res = await client.query(deactivateToroQuery, [startTime]);
+      console.log(`Desactivados ${res.rowCount} productos de Toro.`);
     }
     
     console.log("🎉 Sincronización finalizada exitosamente con especificaciones.");
