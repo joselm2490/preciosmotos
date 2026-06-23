@@ -76,6 +76,9 @@ async function iniciarApp() {
             name: p.name || p.nombre,
             brand: 'Bera',
             price: parseFloat(p.prices?.price || 0),
+            precio_min: p.precio_min != null ? parseFloat(p.precio_min) : parseFloat(p.prices?.price || 0),
+            precio_max: p.precio_max != null ? parseFloat(p.precio_max) : parseFloat(p.prices?.price || 0),
+            precio_fuente: p.precio_fuente || 'api',
             category: p.categories?.[0]?.name || 'Otros',
             image: p.images?.[0]?.src || p.imagen || '',
             url: p.permalink || p.enlace || '',
@@ -109,6 +112,9 @@ async function iniciarApp() {
             name: p.name || p.nombre,
             brand: 'Empire',
             price: parseFloat(p.prices?.price || 0),
+            precio_min: p.precio_min != null ? parseFloat(p.precio_min) : parseFloat(p.prices?.price || 0),
+            precio_max: p.precio_max != null ? parseFloat(p.precio_max) : parseFloat(p.prices?.price || 0),
+            precio_fuente: p.precio_fuente || 'api',
             category: p.categories?.[0]?.name || 'Otros',
             image: p.images?.[0]?.src || p.imagen || '',
             url: p.permalink || p.enlace || '',
@@ -142,6 +148,9 @@ async function iniciarApp() {
             name: p.name || p.nombre,
             brand: 'TVS',
             price: parseFloat(p.prices?.price || 0),
+            precio_min: p.precio_min != null ? parseFloat(p.precio_min) : parseFloat(p.prices?.price || 0),
+            precio_max: p.precio_max != null ? parseFloat(p.precio_max) : parseFloat(p.prices?.price || 0),
+            precio_fuente: p.precio_fuente || 'api',
             category: p.categories?.[0]?.name || 'Otros',
             image: p.images?.[0]?.src || p.imagen || '',
             url: p.permalink || p.enlace || '',
@@ -175,6 +184,9 @@ async function iniciarApp() {
             name: p.name || p.nombre,
             brand: 'Toro',
             price: parseFloat(p.prices?.price || 0),
+            precio_min: p.precio_min != null ? parseFloat(p.precio_min) : parseFloat(p.prices?.price || 0),
+            precio_max: p.precio_max != null ? parseFloat(p.precio_max) : parseFloat(p.prices?.price || 0),
+            precio_fuente: p.precio_fuente || 'api',
             category: p.categories?.[0]?.name || 'Otros',
             image: p.images?.[0]?.src || p.imagen || '',
             url: p.permalink || p.enlace || '',
@@ -208,6 +220,9 @@ async function iniciarApp() {
             name: p.name || p.nombre,
             brand: 'Ava',
             price: parseFloat(p.prices?.price || 0),
+            precio_min: p.precio_min != null ? parseFloat(p.precio_min) : parseFloat(p.prices?.price || 0),
+            precio_max: p.precio_max != null ? parseFloat(p.precio_max) : parseFloat(p.prices?.price || 0),
+            precio_fuente: p.precio_fuente || 'api',
             category: p.categories?.[0]?.name || 'Otros',
             image: p.images?.[0]?.src || p.imagen || '',
             url: p.permalink || p.enlace || '',
@@ -485,6 +500,57 @@ window.mostrarDetalle = function(brand, name) {
     const precioVes = Math.round(precioUsd * window.tasaVesUsd);
     document.getElementById('modalPriceUsd').innerText = `$${precioUsd.toLocaleString()}`;
     document.getElementById('modalPriceVes').innerText = `${precioVes.toLocaleString()} Bs.`;
+    
+    // Rango de precio
+    const rangeContainer = document.getElementById('modalPriceRangeContainer');
+    const sourceBadge = document.getElementById('modalPriceSourceBadge');
+    const minSpan = document.getElementById('modalPriceMin');
+    const maxSpan = document.getElementById('modalPriceMax');
+    const barDot = document.getElementById('rangeBarDot');
+    const reasoningDiv = document.getElementById('modalPriceReasoning');
+
+    const pMin = moto.precio_min != null ? moto.precio_min : precioUsd;
+    const pMax = moto.precio_max != null ? moto.precio_max : precioUsd;
+    const pFuente = moto.precio_fuente || 'api';
+
+    if (rangeContainer && minSpan && maxSpan && sourceBadge && barDot && reasoningDiv) {
+        if (pMin < pMax) {
+            rangeContainer.style.display = 'block';
+            minSpan.innerText = `$${Math.round(pMin).toLocaleString()}`;
+            maxSpan.innerText = `$${Math.round(pMax).toLocaleString()}`;
+            
+            if (pFuente === 'agente_ia') {
+                sourceBadge.innerText = "Agente IA";
+                sourceBadge.className = "range-badge ia";
+                reasoningDiv.style.display = 'block';
+                reasoningDiv.innerHTML = `El agente de IA encontró un rango de precios entre <strong>$${Math.round(pMin).toLocaleString()}</strong> y <strong>$${Math.round(pMax).toLocaleString()}</strong> en distribuidores de Venezuela. El precio mostrado arriba es el promedio.`;
+            } else {
+                sourceBadge.innerText = "Oficial";
+                sourceBadge.className = "range-badge";
+                reasoningDiv.style.display = 'none';
+            }
+            
+            // Posicionar el indicador visual
+            const pct = Math.max(0, Math.min(100, ((precioUsd - pMin) / (pMax - pMin)) * 100));
+            barDot.style.left = `${pct}%`;
+            document.getElementById('rangeBarContainer').style.display = 'block';
+        } else if (pFuente === 'agente_ia') {
+            // El agente encontró un precio único
+            rangeContainer.style.display = 'block';
+            minSpan.innerText = `$${Math.round(pMin).toLocaleString()}`;
+            maxSpan.innerText = `$${Math.round(pMax).toLocaleString()}`;
+            sourceBadge.innerText = "Agente IA";
+            sourceBadge.className = "range-badge ia";
+            reasoningDiv.style.display = 'block';
+            reasoningDiv.innerHTML = `Precio único de mercado de <strong>$${Math.round(pMin).toLocaleString()}</strong> detectado por el agente de IA en distribuidores venezolanos.`;
+            
+            // Ocultar la barra deslizadora ya que es un valor único
+            document.getElementById('rangeBarContainer').style.display = 'none';
+        } else {
+            // Precio fijo oficial sin rango
+            rangeContainer.style.display = 'none';
+        }
+    }
     
     // Link
     const modalLink = document.getElementById('modalLink');

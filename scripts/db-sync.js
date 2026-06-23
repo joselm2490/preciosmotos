@@ -1088,6 +1088,7 @@ async function sync(closePool = false) {
     const query = `
       INSERT INTO public.motos (
           marca, nombre, precio, imagen, imagenes, categoria, enlace, active, updated_at,
+          precio_min, precio_max, precio_fuente,
           motor, cilindrada, potencia, torque, enfriamiento, transmision, embrague,
           suspension_delantera, suspension_trasera, frenos_delanteros, frenos_traseros, frenado,
           caucho_delantero, caucho_trasero, capacidad_combustible, colores, sistema_arranque, encendido,
@@ -1098,6 +1099,7 @@ async function sync(closePool = false) {
       )
       VALUES (
           $1, $2, $3, $4, $5, $6, $7, TRUE, NOW(),
+          $3, $3, 'api',
           $8, $9, $10, $11, $12, $13, $14,
           $15, $16, $17, $18, $19,
           $20, $21, $22, $23, $24, $25,
@@ -1108,7 +1110,10 @@ async function sync(closePool = false) {
       )
       ON CONFLICT (marca, nombre)
       DO UPDATE SET
-          precio = EXCLUDED.precio,
+          precio = CASE WHEN public.motos.precio_fuente = 'agente_ia' THEN public.motos.precio ELSE EXCLUDED.precio END,
+          precio_min = COALESCE(public.motos.precio_min, EXCLUDED.precio),
+          precio_max = COALESCE(public.motos.precio_max, EXCLUDED.precio),
+          precio_fuente = COALESCE(public.motos.precio_fuente, EXCLUDED.precio_fuente),
           imagen = EXCLUDED.imagen,
           imagenes = EXCLUDED.imagenes,
           categoria = EXCLUDED.categoria,

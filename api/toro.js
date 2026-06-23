@@ -11,6 +11,7 @@ module.exports = async function handler(req, res) {
     const result = await client.query(
       `SELECT 
         nombre, precio, imagen, imagenes, categoria, enlace,
+        precio_min, precio_max, precio_fuente,
         motor, cilindrada, potencia, torque, enfriamiento, transmision, embrague,
         suspension_delantera, suspension_trasera, frenos_delanteros, frenos_traseros, frenado,
         caucho_delantero, caucho_trasero, capacidad_combustible, colores, sistema_arranque, encendido,
@@ -29,12 +30,18 @@ module.exports = async function handler(req, res) {
       name: row.nombre,
       categories: [{ name: row.categoria || 'Otros' }],
       prices: { price: parseFloat(row.precio) },
+      precio_min: row.precio_min ? parseFloat(row.precio_min) : null,
+      precio_max: row.precio_max ? parseFloat(row.precio_max) : null,
+      precio_fuente: row.precio_fuente || 'api',
       images: row.imagen ? [{ src: row.imagen }] : [],
       permalink: row.enlace || '',
 
       // Direct fields
       nombre: row.nombre,
       precio: parseFloat(row.precio),
+      precio_min: row.precio_min ? parseFloat(row.precio_min) : null,
+      precio_max: row.precio_max ? parseFloat(row.precio_max) : null,
+      precio_fuente: row.precio_fuente || 'api',
       imagen: row.imagen || '',
       imagenes: row.imagenes || [],
       enlace: row.enlace || '',
