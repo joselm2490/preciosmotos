@@ -266,6 +266,194 @@ async function fetchEmpireMotos() {
   });
 }
 
+const tvsPriceOverrides = {
+  'Apache RTR 200 4V FI': 3190.00,
+  'Apache RTR 160 4V': 2390.00,
+  'TVS Raider': 1650.00,
+  'TVS Star HLX 150 5 Gear Disc': 1490.00,
+  'TVS Sport': 1250.00,
+  'TVS Ntorq 125': 1690.00
+};
+
+async function fetchTvsMotos() {
+  console.log("--- Fetching TVS products ---");
+  const mainUrl = "https://www.tvsmotor.com/es/ve/our-products";
+  
+  const { data: mainHtml } = await axios.get(mainUrl, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
+    },
+    timeout: 15000
+  });
+  
+  const $ = cheerio.load(mainHtml);
+  const uniqueProductsMap = new Map();
+  
+  $('a').each((i, el) => {
+    const href = $(el).attr('href');
+    if (href && href.includes('/our-products/') && !href.endsWith('/our-products') && !href.endsWith('/our-products/')) {
+      let name = '';
+      
+      const parentCard = $(el).closest('.sm-title');
+      if (parentCard.length > 0) {
+        name = parentCard.find('h6').text().trim();
+      } else {
+        const cardParent = $(el).parent();
+        name = cardParent.find('h6').first().text().trim();
+      }
+      
+      if (!name) {
+        name = $(el).closest('div').find('h6').first().text().trim();
+      }
+      
+      let image = '';
+      const inlineImg = $(el).find('img.lazyload');
+      if (inlineImg.length > 0) {
+        image = inlineImg.attr('data-src') || inlineImg.attr('src');
+      }
+      
+      if (!image) {
+        image = $(el).parent().find('img.lazyload').first().attr('data-src') || '';
+      }
+      if (!image) {
+        image = $(el).closest('div').find('img.lazyload').first().attr('data-src') || '';
+      }
+      
+      if (image && image.startsWith('/')) {
+        image = "https://www.tvsmotor.com" + image;
+      }
+      
+      if (name.toLowerCase() === 'sport') {
+        name = 'TVS Sport';
+      } else if (name.toLowerCase() === 'raider') {
+        name = 'TVS Raider';
+      } else if (name.toLowerCase() === 'ntorq 125') {
+        name = 'TVS Ntorq 125';
+      } else if (name.toLowerCase() === 'star hlx 150 5 gear disc') {
+        name = 'TVS Star HLX 150 5 Gear Disc';
+      } else if (name.toLowerCase() === 'apache rtr 160 4v') {
+        name = 'Apache RTR 160 4V';
+      } else if (name.toLowerCase() === 'apache rtr 200 4v fi') {
+        name = 'Apache RTR 200 4V FI';
+      }
+      
+      const existing = uniqueProductsMap.get(href);
+      if (existing) {
+        if (!existing.name && name) existing.name = name;
+        if ((!existing.image || existing.image.includes('data:image')) && image) existing.image = image;
+      } else {
+        uniqueProductsMap.set(href, { enlace: href, name, image });
+      }
+    }
+  });
+  
+  const products = Array.from(uniqueProductsMap.values());
+  console.log(`Found ${products.length} TVS products. Crawling individual specification pages...`);
+  
+  const results = [];
+  for (const prod of products) {
+    try {
+      console.log(`Fetching specifications for TVS: ${prod.name} (${prod.enlace})`);
+      const { data: detailHtml } = await axios.get(prod.enlace, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
+        },
+        timeout: 15000
+      });
+      
+      const s = cheerio.load(detailHtml);
+      const specs = {};
+      
+      s('label').each((i, el) => {
+        const labelText = s(el).text().trim();
+        const parentCol = s(el).parent();
+        if (parentCol.hasClass('col-5') || parentCol.hasClass('col-md-4')) {
+          const valueCol = parentCol.next('.col-7, .col-md-8');
+          if (valueCol.length > 0) {
+            specs[labelText] = valueCol.text().trim();
+          }
+        }
+      });
+      
+      let finalImage = prod.image;
+      if (!finalImage || finalImage.includes('data:image/gif')) {
+        const detailImg = s('.product-banner img, .banner-section img, img.img-fluid').first();
+        if (detailImg.length > 0) {
+          finalImage = detailImg.attr('src') || detailImg.attr('data-src') || '';
+          if (finalImage && finalImage.startsWith('/')) {
+            finalImage = "https://www.tvsmotor.com" + finalImage;
+          }
+        }
+      }
+      
+      let categoria = 'Sincrónicas';
+      if (prod.name.toLowerCase().includes('ntorq')) {
+        categoria = 'Automáticas';
+      }
+      
+      const precio = tvsPriceOverrides[prod.name] || 0.0;
+      
+      results.push({
+        marca: 'TVS',
+        nombre: prod.name,
+        precio,
+        imagen: finalImage,
+        imagenes: finalImage ? [finalImage] : [],
+        categoria,
+        enlace: prod.enlace,
+        
+        motor: specs['Tipo'] || specs['Motor'] || null,
+        cilindrada: specs['Capacidad del motor'] ? specs['Capacidad del motor'] + ' cc' : null,
+        potencia: specs['Potencia Máxima (hp a rpm)'] || specs['Potencia máxima'] || null,
+        torque: specs['Torque Máximo (Nm a rpm)'] || specs['Torque máximo'] || null,
+        enfriamiento: specs['Tipo']?.toLowerCase().includes('aceite') ? 'Aire y Aceite' : (specs['Tipo']?.toLowerCase().includes('aire') ? 'Aire' : null),
+        transmision: specs['Caja de cambios'] || null,
+        embrague: specs['Embrague'] || null,
+        suspension_delantera: specs['Suspensión Delantera'] || null,
+        suspension_trasera: specs['Suspensión Trasera'] || null,
+        frenos_delanteros: specs['Freno Delantero (A Disco)'] || specs['Freno delantero'] || null,
+        frenos_traseros: specs['Freno Trasero (Disco/Tambor)'] || specs['Freno trasero'] || null,
+        frenado: specs['Frenado'] || null,
+        caucho_delantero: specs['Neumático (delantero)'] || null,
+        caucho_trasero: specs['Neumático (trasero)'] || null,
+        capacidad_combustible: specs['Capacidad del Tanque de Combustible'] || specs['Capacidad del tanque de combustible'] || null,
+        colores: null,
+        sistema_arranque: specs['Arranque'] || null,
+        encendido: specs['Encendido'] || null,
+        peso: specs['Peso en orden de marcha (con 90% de combustible y kit de herramientas)'] || specs['Peso en orden de marcha'] || null,
+        capacidad_carga: specs['Capacidad de carga'] || null,
+        garantia: '24 meses / 24.000 km',
+        velocidad_maxima: null,
+        rendimiento_gasolina: null,
+        
+        inclinacion_barras: null,
+        capacidad_ascenso: null,
+        bateria: specs['Valor nominal de la batería (Ah)'] || specs['Batería'] || null,
+        fusibles: specs['Fusibles'] || null,
+        aforo_aceite_motor: null,
+        bujias: specs['Bujía'] || null,
+        faro: specs['Faro Delantero'] || null,
+        luz_freno: specs['Faro Trasero'] || null,
+        luces_cruce: null,
+        longitud_total: specs['Largo'] || null,
+        ancho_total: specs['Ancho'] || null,
+        altura_total: specs['Alto'] || null,
+        distancia_ejes: specs['Distancia entre Ejes'] || null,
+        dimension_caja: null,
+        unidad_final: null,
+        diametro_carrera: null,
+        relacion_compresion: null,
+        sistema_combustible: specs['Sistema de suministro de combustible'] || null
+      });
+      
+    } catch (err) {
+      console.error(`❌ Error parsing details for ${prod.name}:`, err.message);
+    }
+  }
+  
+  return results;
+}
+
 async function sync(closePool = false) {
   const startTime = new Date();
   console.log(`Iniciando sincronización completa: ${startTime.toISOString()}`);
@@ -291,8 +479,16 @@ async function sync(closePool = false) {
     } catch (e) {
       console.error("❌ Error al obtener Empire, se omitirá sincronización de Empire:", e.message);
     }
+
+    // 2b. Fetch data from TVS
+    let tvsMotos = [];
+    try {
+      tvsMotos = await fetchTvsMotos();
+    } catch (e) {
+      console.error("❌ Error al obtener TVS, se omitirá sincronización de TVS:", e.message);
+    }
     
-    const allMotos = [...beraMotos, ...empireMotos];
+    const allMotos = [...beraMotos, ...empireMotos, ...tvsMotos];
     
     if (allMotos.length === 0) {
       console.log("⚠️ No se obtuvieron productos para guardar. Abortando.");
@@ -409,6 +605,17 @@ async function sync(closePool = false) {
       `;
       const res = await client.query(deactivateEmpireQuery, [startTime]);
       console.log(`Desactivados ${res.rowCount} productos de Empire.`);
+    }
+
+    if (tvsMotos.length > 0) {
+      console.log("--- Desactivando productos descontinuados de TVS ---");
+      const deactivateTvsQuery = `
+        UPDATE public.motos
+        SET active = FALSE
+        WHERE marca = 'TVS' AND updated_at < $1;
+      `;
+      const res = await client.query(deactivateTvsQuery, [startTime]);
+      console.log(`Desactivados ${res.rowCount} productos de TVS.`);
     }
     
     console.log("🎉 Sincronización finalizada exitosamente con especificaciones.");
