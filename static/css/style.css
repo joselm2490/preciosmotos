@@ -300,6 +300,12 @@ body {
     border: 1px solid #4b5563;
 }
 
+.brand-badge.escuda {
+    background-color: #1a1a2e;
+    color: #e94560;
+    border: 1px solid #e94560;
+}
+
 /* Product Image */
 .product-image-container {
     width: 100%;
