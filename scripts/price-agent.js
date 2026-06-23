@@ -71,7 +71,7 @@ async function fetchMarketPrices(motoName, brand, currentPrice) {
   if (cleanName.toLowerCase().startsWith(brand.toLowerCase())) {
     cleanName = cleanName.substring(brand.length).trim();
   }
-  cleanName = cleanName.replace(/^(ava|toro|tvs)\s+/i, '').trim();
+  cleanName = cleanName.replace(/^(ava|toro|tvs|bera|empire)\s+/i, '').trim();
 
   const query = `moto ${brand} ${cleanName} precio Venezuela`;
   console.log(`🔍 [${brand}] Buscando precio para: ${cleanName} (Basal: $${currentPrice})...`);
@@ -174,11 +174,11 @@ async function run() {
   try {
     client = await pool.connect();
     
-    // Buscar motos de las marcas AVA, Toro, TVS
+    // Buscar todas las motos activas para analizar precios (incluyendo Bera y Empire)
     const res = await client.query(
       `SELECT id, marca, nombre, precio 
        FROM public.motos 
-       WHERE marca IN ('Ava', 'Toro', 'TVS') AND active = true
+       WHERE active = true
        ORDER BY marca, nombre`
     );
     

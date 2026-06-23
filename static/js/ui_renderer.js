@@ -566,7 +566,24 @@ window.mostrarDetalle = function(brand, name) {
     specsGrid.innerHTML = '';
     
     // All relevant spec properties we care about
-    const specFields = [
+    const specFields = [];
+    
+    // Rango referencial al inicio para indicar que es un promedio
+    if (moto.precio_min != null && moto.precio_max != null) {
+        if (moto.precio_min < moto.precio_max) {
+            specFields.push({ 
+                label: 'Rango de Precios', 
+                val: `Estimado entre $${Math.round(moto.precio_min).toLocaleString()} y $${Math.round(moto.precio_max).toLocaleString()} (Valor promedio de mercado)` 
+            });
+        } else {
+            specFields.push({ 
+                label: 'Rango de Precios', 
+                val: `Precio único estimado en $${Math.round(moto.precio_min).toLocaleString()}` 
+            });
+        }
+    }
+
+    specFields.push(
         { label: 'Motor', val: moto.motor },
         { label: 'Cilindrada', val: moto.cilindrada },
         { label: 'Potencia', val: moto.potencia },
@@ -588,7 +605,7 @@ window.mostrarDetalle = function(brand, name) {
         { label: 'Garantía', val: moto.garantia },
         { label: 'Velocidad Máxima', val: moto.velocidad_maxima },
         { label: 'Rendimiento de Gasolina', val: moto.rendimiento_gasolina }
-    ];
+    );
     
     let hasSpecs = false;
     specFields.forEach(field => {
