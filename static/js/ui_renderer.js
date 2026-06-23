@@ -282,7 +282,7 @@ function filtrarYRenderizar() {
                         const precioVes = Math.round(precioUsd * window.tasaVesUsd);
                         
                         return `
-                            <div class="product-card">
+                            <div class="product-card" onclick="mostrarDetalle('${moto.brand}', '${moto.name.replace(/'/g, "\\'")}')">
                                 <span class="brand-badge ${moto.brand.toLowerCase()}">${moto.brand}</span>
                                 <div class="product-image-container">
                                     ${moto.image 
@@ -423,3 +423,100 @@ async function actualizarBaseDeDatos() {
         btn.style.backgroundColor = ""; // Reset to CSS default
     }
 }
+
+// Modal control functions
+window.mostrarDetalle = function(brand, name) {
+    const moto = window.allMotos.find(m => m.brand === brand && m.name === name);
+    if (!moto) return;
+    
+    // Fill basic details
+    document.getElementById('modalTitle').innerText = moto.name;
+    
+    // Brand badge
+    const badge = document.getElementById('modalBrandBadge');
+    badge.innerText = moto.brand;
+    badge.className = `brand-badge ${moto.brand.toLowerCase()}`;
+    
+    // Image
+    const modalImg = document.getElementById('modalImage');
+    modalImg.src = moto.image || '';
+    modalImg.alt = moto.name;
+    
+    // Price
+    const precioUsd = moto.price;
+    const precioVes = Math.round(precioUsd * window.tasaVesUsd);
+    document.getElementById('modalPriceUsd').innerText = `$${precioUsd.toLocaleString()}`;
+    document.getElementById('modalPriceVes').innerText = `${precioVes.toLocaleString()} Bs.`;
+    
+    // Link
+    const modalLink = document.getElementById('modalLink');
+    if (moto.url) {
+        modalLink.href = moto.url;
+        modalLink.style.display = 'inline-flex';
+    } else {
+        modalLink.style.display = 'none';
+    }
+    
+    // Specifications list - dynamic
+    const specsGrid = document.getElementById('modalSpecsGrid');
+    specsGrid.innerHTML = '';
+    
+    // All relevant spec properties we care about
+    const specFields = [
+        { label: 'Motor', val: moto.motor },
+        { label: 'Cilindrada', val: moto.cilindrada },
+        { label: 'Potencia', val: moto.potencia },
+        { label: 'Torque', val: moto.torque },
+        { label: 'Enfriamiento', val: moto.enfriamiento },
+        { label: 'Transmisión', val: moto.transmision },
+        { label: 'Embrague', val: moto.embrague },
+        { label: 'Suspensión Delantera', val: moto.suspension_delantera },
+        { label: 'Suspensión Trasera', val: moto.suspension_trasera },
+        { label: 'Freno Delantero', val: moto.frenos_delanteros },
+        { label: 'Freno Trasero', val: moto.frenos_traseros },
+        { label: 'Caucho Delantero', val: moto.caucho_delantero },
+        { label: 'Caucho Trasero', val: moto.caucho_trasero },
+        { label: 'Capacidad de Combustible', val: moto.capacidad_combustible },
+        { label: 'Colores Disponibles', val: moto.colores },
+        { label: 'Sistema de Arranque', val: moto.sistema_arranque },
+        { label: 'Peso (Kg)', val: moto.peso },
+        { label: 'Capacidad de Carga', val: moto.capacidad_carga },
+        { label: 'Garantía', val: moto.garantia },
+        { label: 'Velocidad Máxima', val: moto.velocidad_maxima },
+        { label: 'Rendimiento de Gasolina', val: moto.rendimiento_gasolina }
+    ];
+    
+    let hasSpecs = false;
+    specFields.forEach(field => {
+        if (field.val && field.val !== 'null' && field.val !== '') {
+            hasSpecs = true;
+            const row = document.createElement('div');
+            row.className = 'spec-row';
+            row.innerHTML = `
+                <span class="spec-label">${field.label}</span>
+                <span class="spec-value">${field.val}</span>
+            `;
+            specsGrid.appendChild(row);
+        }
+    });
+    
+    if (!hasSpecs) {
+        specsGrid.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 20px;">No hay especificaciones adicionales registradas para este modelo.</p>';
+    }
+    
+    // Open modal
+    document.getElementById('motoModal').classList.add('active');
+    document.body.style.overflow = 'hidden'; // Disable page scrolling
+};
+
+window.cerrarModal = function() {
+    document.getElementById('motoModal').classList.remove('active');
+    document.body.style.overflow = ''; // Re-enable page scrolling
+};
+
+// Keyboard listener for Escape key to close modal
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        window.cerrarModal();
+    }
+});

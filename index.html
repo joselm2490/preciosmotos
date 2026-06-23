@@ -86,6 +86,42 @@
         </div>
     </main>
 
+    <!-- Modal de Detalle de Especificaciones -->
+    <div id="motoModal" class="modal">
+        <div class="modal-overlay" onclick="cerrarModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="cerrarModal()" aria-label="Cerrar modal">
+                <svg viewBox="0 0 24 24" width="24" height="24">
+                    <path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                </svg>
+            </button>
+            <div class="modal-body">
+                <div class="modal-left">
+                    <span id="modalBrandBadge" class="brand-badge"></span>
+                    <div class="modal-image-container">
+                        <img id="modalImage" src="" alt="Imagen de la moto">
+                    </div>
+                    <div class="modal-quick-info">
+                        <h2 id="modalTitle"></h2>
+                        <div class="modal-price-container">
+                            <span id="modalPriceUsd" class="modal-price-tag"></span>
+                            <span id="modalPriceVes" class="modal-price-ves"></span>
+                        </div>
+                        <a id="modalLink" href="" target="_blank" class="modal-link-btn">Ver Sitio Oficial</a>
+                    </div>
+                </div>
+                <div class="modal-right">
+                    <h3>Especificaciones Técnicas</h3>
+                    <div class="specs-wrapper">
+                        <div id="modalSpecsGrid" class="specs-grid">
+                            <!-- Se poblará dinámicamente con JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 1. Configuración primero -->
     <script src="static/js/config.js"></script>
 
