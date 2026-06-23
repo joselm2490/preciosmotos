@@ -514,9 +514,30 @@ window.cerrarModal = function() {
     document.body.style.overflow = ''; // Re-enable page scrolling
 };
 
-// Keyboard listener for Escape key to close modal
+// Lightbox control functions
+window.ampliarImagen = function() {
+    const modalImg = document.getElementById('modalImage');
+    if (!modalImg || !modalImg.src) return;
+    
+    const lightboxImg = document.getElementById('lightboxImage');
+    lightboxImg.src = modalImg.src;
+    lightboxImg.alt = modalImg.alt;
+    
+    document.getElementById('imageLightbox').classList.add('active');
+};
+
+window.cerrarLightbox = function() {
+    document.getElementById('imageLightbox').classList.remove('active');
+};
+
+// Keyboard listener for Escape key to close modal or lightbox
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
-        window.cerrarModal();
+        const lightbox = document.getElementById('imageLightbox');
+        if (lightbox && lightbox.classList.contains('active')) {
+            window.cerrarLightbox();
+        } else {
+            window.cerrarModal();
+        }
     }
 });
