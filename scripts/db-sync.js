@@ -678,7 +678,7 @@ async function fetchAvaMotos() {
     {
       nombre: 'AVA León',
       precio: 1150.00,
-      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/leon.png',
+      imagen: 'https://avamoto-storage.nyc3.digitaloceanspaces.com/AvamotosImagenes/motos/le%C3%B3n.png',
       categoria: 'Sincrónicas',
       enlace: 'https://avamotosvzla.com/motos/moto/le%C3%B3n',
       motor: '4 tiempos, monocilíndrico',
