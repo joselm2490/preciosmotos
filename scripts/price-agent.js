@@ -9,11 +9,7 @@ function sleep(ms) {
 
 function httpsGet(url) {
   return new Promise((resolve, reject) => {
-    const options = {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-      }
-    };
+    const options = {};
     https.get(url, options, (res) => {
       let body = '';
       res.on('data', c => body += c);
@@ -65,6 +61,24 @@ function postGroq(messages) {
   });
 }
 
+function getDomain(url) {
+  try {
+    const parsed = new URL(url);
+    return parsed.hostname;
+  } catch (e) {
+    return null;
+  }
+}
+
+function cleanMarkdown(text) {
+  if (!text) return '';
+  // Replace images ![alt](url) with empty string
+  let cleaned = text.replace(/!\[.*?\]\(.*?\)/g, '');
+  // Replace links [text](url) with just text
+  cleaned = cleaned.replace(/\[(.*?)\]\(.*?\)/g, '$1');
+  return cleaned;
+}
+
 async function fetchMarketPrices(motoName, brand, currentPrice) {
   // Clean up motoName to avoid duplication of brand
   let cleanName = motoName;
@@ -85,14 +99,19 @@ async function fetchMarketPrices(motoName, brand, currentPrice) {
     return null;
   }
   
-  // Extract URLs from DuckDuckGo redirects
+  // Extract URLs from DuckDuckGo redirects, deduplicating by domain
   const urls = [];
+  const domains = [];
   const regex = /uddg=([^&]+)/g;
   let match;
-  while ((match = regex.exec(searchResultsMarkdown)) !== null && urls.length < 4) {
+  while ((match = regex.exec(searchResultsMarkdown)) !== null && urls.length < 5) {
     const rawUrl = decodeURIComponent(match[1]);
     if (!rawUrl.includes('duckduckgo.com') && !urls.includes(rawUrl)) {
-      urls.push(rawUrl);
+      const domain = getDomain(rawUrl);
+      if (domain && !domains.includes(domain)) {
+        urls.push(rawUrl);
+        domains.push(domain);
+      }
     }
   }
   
@@ -106,9 +125,11 @@ async function fetchMarketPrices(motoName, brand, currentPrice) {
     try {
       console.log(`📖 Leyendo página de detalle: ${url} ...`);
       const content = await httpsGet('https://r.jina.ai/' + url);
-      pagesContext += `\n--- CONTENIDO DE ${url} ---\n${content.substring(0, 1500)}\n`;
+      const cleanedContent = cleanMarkdown(content);
+      // Keep up to 2000 characters of cleaned content
+      pagesContext += `\n--- CONTENIDO DE ${url} ---\n${cleanedContent.substring(0, 2000)}\n`;
       fetchedCount++;
-      if (fetchedCount >= 2) break; // Fetch up to 2 pages max to keep tokens low
+      if (fetchedCount >= 3) break; // Fetch up to 3 pages max
     } catch (err) {
       console.log(`⚠️ No se pudo leer la página de detalle ${url}:`, err.message);
     }
@@ -116,7 +137,7 @@ async function fetchMarketPrices(motoName, brand, currentPrice) {
   
   const combinedContext = `
 SEARCH RESULTS SUMMARY:
-${searchResultsMarkdown.substring(0, 2000)}
+${cleanMarkdown(searchResultsMarkdown).substring(0, 1000)}
 
 DETAILED PAGES CONTENT:
 ${pagesContext}
@@ -211,8 +232,8 @@ async function run() {
         console.log(`⚠️ No se obtuvieron datos de precio válidos. Se mantiene precio actual ($${moto.precio}).`);
       }
       
-      // Esperar 3.5 segundos entre peticiones para evitar rate limits de Groq/Jina
-      await sleep(3500);
+      // Esperar 8 segundos entre peticiones para evitar rate limits de Groq/Jina (TPM limit)
+      await sleep(8000);
     }
     
     console.log(`\n🎉 AGENTE FINALIZADO: Se actualizaron ${updatedCount} de ${motos.length} motos.`);
