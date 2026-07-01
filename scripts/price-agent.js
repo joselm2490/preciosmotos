@@ -21,7 +21,7 @@ function httpsGet(url) {
 function postGroq(messages) {
   return new Promise((resolve, reject) => {
     const data = JSON.stringify({
-      model: 'llama-3.3-70b-versatile',
+      model: 'llama-3.1-8b-instant',
       messages: messages,
       temperature: 0.1,
       response_format: { type: 'json_object' }
@@ -126,10 +126,10 @@ async function fetchMarketPrices(motoName, brand, currentPrice) {
       console.log(`📖 Leyendo página de detalle: ${url} ...`);
       const content = await httpsGet('https://r.jina.ai/' + url);
       const cleanedContent = cleanMarkdown(content);
-      // Keep up to 2000 characters of cleaned content
-      pagesContext += `\n--- CONTENIDO DE ${url} ---\n${cleanedContent.substring(0, 2000)}\n`;
+      // Keep up to 1500 characters of cleaned content
+      pagesContext += `\n--- CONTENIDO DE ${url} ---\n${cleanedContent.substring(0, 1500)}\n`;
       fetchedCount++;
-      if (fetchedCount >= 3) break; // Fetch up to 3 pages max
+      if (fetchedCount >= 2) break; // Fetch up to 2 pages max
     } catch (err) {
       console.log(`⚠️ No se pudo leer la página de detalle ${url}:`, err.message);
     }
@@ -137,7 +137,7 @@ async function fetchMarketPrices(motoName, brand, currentPrice) {
   
   const combinedContext = `
 SEARCH RESULTS SUMMARY:
-${cleanMarkdown(searchResultsMarkdown).substring(0, 1000)}
+${cleanMarkdown(searchResultsMarkdown).substring(0, 800)}
 
 DETAILED PAGES CONTENT:
 ${pagesContext}
@@ -232,8 +232,8 @@ async function run() {
         console.log(`⚠️ No se obtuvieron datos de precio válidos. Se mantiene precio actual ($${moto.precio}).`);
       }
       
-      // Esperar 8 segundos entre peticiones para evitar rate limits de Groq/Jina (TPM limit)
-      await sleep(8000);
+      // Esperar 11 segundos entre peticiones para evitar rate limits de Groq/Jina (TPM limit de 6000)
+      await sleep(11000);
     }
     
     console.log(`\n🎉 AGENTE FINALIZADO: Se actualizaron ${updatedCount} de ${motos.length} motos.`);
