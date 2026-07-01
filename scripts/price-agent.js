@@ -158,11 +158,11 @@ Debes retornar estrictamente un objeto JSON con el siguiente formato:
   "reasoning": "Explicación breve de dónde se encontraron los precios, si se realizó alguna conversión y cómo se calculó el promedio"
 }
 Reglas críticas:
-1. El precio de referencia actual de la moto es de $${currentPrice} USD. Los precios que extraigas deben estar dentro del rango realista del mercado de +/- 35% de este valor (es decir, entre $${minAllowed} y $${maxAllowed} USD).
-2. Si encuentras precios expresados en Bolívares Soberanos (Bs. o VES), conviértelos a dólares (USD) usando una tasa de cambio aproximada de 36.5 Bs. por dólar, y verifica si el resultado cae dentro del rango de referencia.
-3. Cualquier precio fuera de este rango es altamente probable que sea un pago inicial (cuota inicial), cuota de financiamiento semanal/mensual, o un error (como un número de teléfono o precio en bolívares mal interpretado). Debes IGNORARLO.
+1. El precio de referencia actual de la moto es de $${currentPrice} USD. Tu objetivo es encontrar el precio REAL de mercado actual en el contexto. El precio real debe estar dentro del rango realista de +/- 35% de este valor de referencia (es decir, entre $${minAllowed} y $${maxAllowed} USD). Si encuentras un precio real dentro de este rango, retorna ese valor real encontrado, NO el valor de referencia.
+2. Si encuentras precios expresados en Bolívares Soberanos (Bs. o VES), conviértelos a dólares (USD) usando una tasa de cambio aproximada de 36.5 Bs. por dólar, y verifica si el precio resultante en USD cae dentro del rango de referencia.
+3. Cualquier precio fuera de este rango de +/- 35% es altamente probable que sea un pago inicial (cuota inicial), cuota de financiamiento semanal o mensual, o un error. Debes IGNORARLO por completo.
 4. Extrae SOLAMENTE precios de motocicletas NUEVAS (cero kilómetros), nunca de segunda mano o usadas.
-5. Si solo encuentras un precio único válido, colócalo en average_price, min_price y max_price.
+5. Si solo encuentras un precio único válido en el contexto (por ejemplo, $1182), colócalo tal cual en average_price, min_price y max_price (NO uses el precio de referencia de $${currentPrice}).
 6. Si no hay información de precio confiable dentro del rango de referencia en el contexto provisto, retorna null en los campos numéricos.`
     },
     {
@@ -232,8 +232,8 @@ async function run() {
         console.log(`⚠️ No se obtuvieron datos de precio válidos. Se mantiene precio actual ($${moto.precio}).`);
       }
       
-      // Esperar 11 segundos entre peticiones para evitar rate limits de Groq/Jina (TPM limit de 6000)
-      await sleep(11000);
+      // Esperar 16 segundos entre peticiones para evitar rate limits de Groq/Jina (TPM limit de 6000)
+      await sleep(16000);
     }
     
     console.log(`\n🎉 AGENTE FINALIZADO: Se actualizaron ${updatedCount} de ${motos.length} motos.`);
